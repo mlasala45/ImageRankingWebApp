@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import ImageFrame from './components/ImageFrame/ImageFrame.jsx';
+import RankingUI from './components/RankingUI/RankingUI.jsx';
+import CssBaseline from '@mui/material/CssBaseline';
+import DatasetCreationUI from './components/DatasetCreationUI/DatasetCreationUI.jsx';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -39,18 +41,15 @@ export default class App extends Component {
     }
 
     render() {
-        let contents = this.state.loading
+        /*let contents = this.state.loading
             ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-            : App.renderForecastsTable(this.state.forecasts);
+            : App.renderForecastsTable(this.state.forecasts);*/
 
         return (
-            <div>
-                <h1 id="tabelLabel" >Weather forecast</h1>
-                <p>This component demonstrates fetching data from the server.</p>
-                <ImageFrame img_path='/300px-Team_blu.png' />
-                <ImageFrame img_path='/300px-Team_red.png' />
-                {contents}
-            </div>
+            <React.Fragment>
+                <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
+                <DatasetCreationUI />
+            </React.Fragment>
         );
     }
 
