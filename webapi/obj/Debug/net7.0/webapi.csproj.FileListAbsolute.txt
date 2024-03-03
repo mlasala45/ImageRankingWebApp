@@ -31,3 +31,4 @@ C:\Users\Energ\Documents\Projects\School\ITSC 4850 - Capstone Project\ImageRanki
 C:\Users\Energ\Documents\Projects\School\ITSC 4850 - Capstone Project\ImageRankingWebApp\webapi\obj\Debug\net7.0\webapi.pdb
 C:\Users\Energ\Documents\Projects\School\ITSC 4850 - Capstone Project\ImageRankingWebApp\webapi\obj\Debug\net7.0\webapi.genruntimeconfig.cache
 C:\Users\Energ\Documents\Projects\School\ITSC 4850 - Capstone Project\ImageRankingWebApp\webapi\obj\Debug\net7.0\ref\webapi.dll
+C:\Users\Energ\Documents\Projects\School\ITSC 4850 - Capstone Project\ImageRankingWebApp\webapi\bin\Debug\net7.0\Newtonsoft.Json.dll

@@ -31,10 +31,11 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^/weatherforecast': {
-                target: 'http://webapi:7281/',
-                secure: false
-            }
+            '^/backend': {
+                target: 'https://localhost:7281/', //https://webapi
+                secure: false,
+                rewrite: (path) => path.replace(/^\/backend/, ''),
+            },
         },
         host: true,
         port: 5173,

@@ -11,20 +11,21 @@ import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import img_err from './img_err.png'
 import './DatasetCreationUI.css'
+import PropTypes from 'prop-types';
+import { DrawBitmapToCanvasCentered, GetDesiredBitmapForCanvas } from '../../util/BitmapUtil';
 
 
 const ImageListBody = (loadedBitmaps) => {
     return (
         <div className='scrollRect'>
             <ImageList id='image-list' sx={{ width: '-webkit-fill-available', height: 'fit-content' }} cols={4}>
-                {loadedBitmaps.map((item, index) => {
+                {loadedBitmaps.map((item) => {
                     return (
                         <ImageListItem sx={{
                             aspectRatio: 1,
                             height: 0
                         }} key={item.title}>
-                            <canvas id={"imagelist_canvas_" + index} style={{ width: '100%' }} width="150" height="150">
-                            </canvas>
+                            <canvas id={"imagelist_canvas"} data-img-key={item.title} style={{ width: '100%' }} width="150" height="150" />
                             <ImageListItemBar
                                 subtitle={item.title}
                             />
@@ -35,7 +36,7 @@ const ImageListBody = (loadedBitmaps) => {
         </div>)
 }
 
-export default function DatasetCreationUI() {
+export default function DatasetCreationUI({ registerBitmap, appInst }) {
     const [loadedBitmaps, setLoadedBitmaps] = useState([])
 
     const onLoad = () => {
@@ -43,21 +44,12 @@ export default function DatasetCreationUI() {
         const imageList = document.getElementById('image-list')
         const canvases = imageList.getElementsByTagName('canvas')
         for (const canvas of canvases) {
-            const id = canvas.id;
-            const regex = /(\d+)/;
-            const match = id.match(regex);
-            const number = parseInt(match[0]);
-            const img = loadedBitmaps[number].img;
-            const ctx = canvas.getContext("2d");
-            const scaleFactor = Math.min(canvas.width / img.width, canvas.height / img.height);
-            const destWidth = img.width * scaleFactor;
-            const destHeight = img.height * scaleFactor;
-            const x = (canvas.width - destWidth) / 2;
-            const y = (canvas.height - destHeight) / 2;
-
-            // Draw the scaled image on the canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, x, y, destWidth, destHeight);
+            //const id = canvas.id;
+            //const regex = /(\d+)/;
+            //const match = id.match(regex);
+            //const number = parseInt(match[0]);
+            const bitmap = GetDesiredBitmapForCanvas(canvas, appInst)
+            DrawBitmapToCanvasCentered(bitmap, canvas)
         }
     }
 
@@ -75,6 +67,7 @@ export default function DatasetCreationUI() {
             let bitmap
             try {
                 bitmap = await createImageBitmap(file)
+                registerBitmap(appInst, bitmap, k)
             }
             catch (e) {
                 bitmap = await createImageBitmap(document.getElementById('img-err'))
@@ -89,7 +82,24 @@ export default function DatasetCreationUI() {
     }
 
     const onClick_Next = async () => {
+        let data = []
+        for (const entry of loadedBitmaps) {
+            data.push(entry.title)
+        }
+        const response = await fetch("/backend/CreateDataset", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
 
+        if (response.ok) {
+            appInst.setState({
+                ...appInst.state,
+                mode: 'pairwiseChoices'
+            })
+        }
     }
 
     const NextButton = () => {
@@ -129,3 +139,8 @@ export default function DatasetCreationUI() {
         </React.Fragment>
     );
 }
+
+DatasetCreationUI.propTypes = {
+    registerBitmap: PropTypes.func.isRequired,
+    appInst: PropTypes.object.isRequired,
+};

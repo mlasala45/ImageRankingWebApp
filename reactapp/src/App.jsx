@@ -8,11 +8,20 @@ export default class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { forecasts: [], loading: true };
+        this.state = {
+            mode: 'createDataset',
+            bitmaps: {},
+        };
     }
 
     componentDidMount() {
         this.populateWeatherData();
+    }
+
+    registerBitmap(appInst, bitmap, key) {
+        const allBitmaps = appInst.state.bitmaps
+        allBitmaps[key] = bitmap
+        appInst.setState({ ...appInst.state })
     }
 
     static renderForecastsTable(forecasts) {
@@ -45,10 +54,20 @@ export default class App extends Component {
             ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
             : App.renderForecastsTable(this.state.forecasts);*/
 
+        let contents = null
+        switch (this.state.mode) {
+            case 'createDataset':
+                contents = <DatasetCreationUI registerBitmap={this.registerBitmap} appInst={this} />
+                break;
+            case 'pairwiseChoices':
+                contents = <RankingUI appInst={this} />
+                break;
+        }
+
         return (
             <React.Fragment>
                 <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
-                <DatasetCreationUI />
+                {contents}
             </React.Fragment>
         );
     }

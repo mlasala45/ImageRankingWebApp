@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "VIkIiKMGie+bO09LGVmrQQRaIvCF2gb6ePcFH/tRVUOnehxSweoAv8bO8Bhf2j3iy3DpGTvJYsyuQgrDHUZS3Q==",
+  "dgSpecHash": "q9k2DkmLrJOKXRCNOSWAiMRKqZ1WrUvi225n0jcC9gG61+eNJ9oKZxWeLuC+73wd1tRo9NLhJza2on22kR02+g==",
   "success": true,
   "projectFilePath": "C:\\Users\\Energ\\Documents\\Projects\\School\\ITSC 4850 - Capstone Project\\ImageRankingWebApp\\webapi\\webapi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Energ\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.15\\microsoft.aspnetcore.openapi.7.0.15.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
+    "C:\\Users\\Energ\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
