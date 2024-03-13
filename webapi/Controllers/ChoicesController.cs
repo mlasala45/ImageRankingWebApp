@@ -27,8 +27,8 @@ public class ChoicesController : ControllerBase
     public IActionResult GetNextChoice()
     {
         var dataset = GetDatasetLocal();
-        var firstChoice = Random.Shared.Next(0, dataset.imageNames.Length);
-        var secondChoice = Random.Shared.Next(0, dataset.imageNames.Length - 1);
+        var firstChoice = Random.Shared.Next(0, dataset.ImageNames.Length);
+        var secondChoice = Random.Shared.Next(0, dataset.ImageNames.Length - 1);
         if (secondChoice >= firstChoice) secondChoice++;
 
         var name = HttpContext.Connection.Id;
@@ -36,8 +36,8 @@ public class ChoicesController : ControllerBase
 
         return new JsonResult(new
         {
-            left = dataset.imageNames[firstChoice],
-            right = dataset.imageNames[secondChoice]
+            left = dataset.ImageNames[firstChoice],
+            right = dataset.ImageNames[secondChoice]
         });
     }
 

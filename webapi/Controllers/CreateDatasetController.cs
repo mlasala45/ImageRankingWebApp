@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Numerics;
 using System.Xml.Linq;
 
@@ -25,9 +27,17 @@ public class CreateDatasetController : ControllerBase
         Console.WriteLine($"[{name}] Created a new local dataset with {body.Length} entries.");
 
         var dataset = new UserDataset();
-        dataset.imageNames = body;
+        dataset.ImageNames = body;
 
-        HttpContext.Session.Set("ActiveDataset", dataset.ToBytes());
+        using (var context = new AppDatabaseContext())
+        {
+            //DatabaseUtility.GuaranteeWALAutoCheckpoint(context);
+
+            context.Datasets.Add(dataset);
+            context.SaveChanges();
+
+            DatabaseUtility.ForceWALCheckpoint(context);
+        }
 
         return new OkResult();
     }
@@ -36,6 +46,12 @@ public class CreateDatasetController : ControllerBase
     public IActionResult GetDataset()
     {
         var activeDatasetBytes = HttpContext.Session.Get("ActiveDataset")!;
+
+        using (var context = new AppDatabaseContext())
+        {
+            //context.Datasets.Add(dataset);
+            //await context.SaveChangesAsync();
+        }
         return new JsonResult(
             UserDataset.JsonFromBytes(activeDatasetBytes));
     }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
@@ -7,7 +8,13 @@ namespace webapi;
 
 public class UserDataset
 {
-    public string[] imageNames;
+    [Key]
+    public int UID { get; set; }
+    public string[] ImageNames { get; set; }
+
+    public UserDataset() {
+        ImageNames = new string[0];
+    }
 
     public byte[] ToBytes()
     {
