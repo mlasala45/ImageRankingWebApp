@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "q9k2DkmLrJOKXRCNOSWAiMRKqZ1WrUvi225n0jcC9gG61+eNJ9oKZxWeLuC+73wd1tRo9NLhJza2on22kR02+g==",
+  "dgSpecHash": "88QgIiTyXmyhkqnFVPVDz0KgOIJo7y2x4uUzTRVSskEaa+8w0KIvJu+c5pDT42Sbk6NQJna7/jvLG9T3WTCA5Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\Energ\\Documents\\Projects\\School\\ITSC 4850 - Capstone Project\\ImageRankingWebApp\\webapi\\webapi.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Energ\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.15\\microsoft.aspnetcore.openapi.7.0.15.nupkg.sha512",
+    "C:\\Users\\Energ\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.3\\microsoft.aspnetcore.openapi.8.0.3.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
     "C:\\Users\\Energ\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",

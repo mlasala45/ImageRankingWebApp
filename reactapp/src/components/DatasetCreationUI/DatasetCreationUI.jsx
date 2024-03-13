@@ -118,7 +118,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
         <React.Fragment>
             <img id='img-err' src={img_err} style={{ display: 'none' }} ></img>
             <h2 style={{ marginInlineStart: '45px' }}>Create Dataset</h2>
-            <div className='center'>
+            <div className='center-45'>
                 <Box sx={{
                     bgcolor: '#6f6f7d',
                     borderRadius: 2,

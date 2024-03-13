@@ -5,7 +5,7 @@ import ImageChoice from './ImageChoice/ImageChoice'
 import { useEffect, useState, useRef } from 'react';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import './RankingUI.css'
+import '../../util/LayoutUtil.css'
 import PropTypes from 'prop-types';
 import { DrawBitmapToCanvasCentered, GetDesiredBitmapForCanvas } from '../../util/BitmapUtil';
 
@@ -152,7 +152,7 @@ export default function RankingUI({ appInst }) {
     });
 
     return (
-        <div className='center'>
+        <div id='RankingUI' className='center'>
             <Box>
                 <Stack direction="row" spacing={20}>
                     <ImageChoice label='Left Image' ref={leftImgRef} slide_dir={animData.leftImageChosen ? 'right' : 'up'} animData={animData} appInst={appInst} />

@@ -4,7 +4,7 @@
 # Build Environment - webapi
 
 # Create a stage for building the application.
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build-webapi
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build-webapi
 
 COPY ./webapi /source
 
@@ -29,7 +29,7 @@ FROM node:18-alpine AS node_base
 ################################################################################
 # Run Environmnent - reactapp
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS final-reactapp
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS final-reactapp
 COPY --from=node_base . .
 
 WORKDIR /app
@@ -43,7 +43,7 @@ ENTRYPOINT ["npm","run","dev"]
 ################################################################################
 # Run Environmnent - webapi
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS final-webapi
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final-webapi
 WORKDIR /app
 
 COPY --from=build-webapi /app /app/webapi

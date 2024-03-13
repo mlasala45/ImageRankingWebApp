@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import RankingUI from './components/RankingUI/RankingUI.jsx';
 import CssBaseline from '@mui/material/CssBaseline';
 import DatasetCreationUI from './components/DatasetCreationUI/DatasetCreationUI.jsx';
+import VerticalTabs from './components/AppMainLayout/AppMainLayout.jsx';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -64,10 +65,11 @@ export default class App extends Component {
                 break;
         }
 
+        console.log("Main App Render")
         return (
             <React.Fragment>
                 <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
-                {contents}
+                <VerticalTabs />
             </React.Fragment>
         );
     }
