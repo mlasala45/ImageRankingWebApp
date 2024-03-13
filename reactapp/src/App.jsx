@@ -61,7 +61,7 @@ export default class App extends Component {
                 contents = <DatasetCreationUI registerBitmap={this.registerBitmap} appInst={this} />
                 break;
             case 'pairwiseChoices':
-                contents = <RankingUI appInst={this} />
+                contents = <VerticalTabs appInst={this} />
                 break;
         }
 
@@ -69,7 +69,7 @@ export default class App extends Component {
         return (
             <React.Fragment>
                 <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
-                <VerticalTabs />
+                {contents}
             </React.Fragment>
         );
     }

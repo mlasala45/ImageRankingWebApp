@@ -12,6 +12,9 @@ public class UserDataset
     public int UID { get; set; }
     public string[] ImageNames { get; set; }
 
+    public DateTime TimeCreated { get; set; }
+    public string AuthorConnectionID { get; set; }
+
     public UserDataset() {
         ImageNames = new string[0];
     }

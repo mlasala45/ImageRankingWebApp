@@ -95,7 +95,7 @@ export function PersistentDrawerLeft() {
     );
 }
 
-export default function VerticalTabs() {
+export default function VerticalTabs({ appInst }) {
     const [value, setValue] = React.useState(0);
 
 
@@ -128,7 +128,7 @@ export default function VerticalTabs() {
             </Tabs>
 
             <TabPanel value={value} index={0}>
-                <RankingUI />
+                <RankingUI appInst={appInst} />
             </TabPanel>
             <TabPanel value={value} index={1}>
                 Rank Predictions
@@ -165,7 +165,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
+                    <Typography component='div'>{children}</Typography>
                 </Box>
             )}
         </div>
@@ -183,4 +183,8 @@ function a11yProps(index) {
         id: `vertical-tab-${index}`,
         'aria-controls': `vertical-tabpanel-${index}`,
     };
+}
+
+VerticalTabs.propTypes = {
+    appInst: PropTypes.object
 }

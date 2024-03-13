@@ -19,8 +19,13 @@ public class ChoicesController : ControllerBase
 
     UserDataset GetDatasetLocal()
     {
-        var activeDatasetBytes = HttpContext.Session.Get("ActiveDataset")!;
-        return UserDataset.FromBytes(activeDatasetBytes);
+        var activeDatasetPk = HttpContext.Session.GetInt32("ActiveDataset")!;
+
+        using (var context = new AppDatabaseContext())
+        {
+            var dataset = context.Datasets.Find(activeDatasetPk);
+            return dataset;
+        }
     }
 
     [HttpGet("GetNextChoice")]
@@ -32,7 +37,7 @@ public class ChoicesController : ControllerBase
         if (secondChoice >= firstChoice) secondChoice++;
 
         var name = HttpContext.Connection.Id;
-        Console.WriteLine($"[{name}]: GetNextChoice ({firstChoice},{secondChoice})");
+        //Console.WriteLine($"[{name}]: GetNextChoice ({firstChoice},{secondChoice})");
 
         return new JsonResult(new
         {

@@ -23,36 +23,46 @@ public class CreateDatasetController : ControllerBase
         //var str = "Received Create Database Request. Names: ";
         //foreach (var line in body) str += "\n" + line;
         //Console.WriteLine(str);
-        var name = HttpContext.Connection.Id;
-        Console.WriteLine($"[{name}] Created a new local dataset with {body.Length} entries.");
 
         var dataset = new UserDataset();
         dataset.ImageNames = body;
+        dataset.TimeCreated = DateTime.Now;
+        dataset.AuthorConnectionID = HttpContext.Connection.Id;
+
+        Console.WriteLine($"[{dataset.AuthorConnectionID}] Created a new local dataset with {body.Length} entries.");
 
         using (var context = new AppDatabaseContext())
         {
             //DatabaseUtility.GuaranteeWALAutoCheckpoint(context);
 
+            var entry = context.Entry(dataset);
+
             context.Datasets.Add(dataset);
             context.SaveChanges();
 
             DatabaseUtility.ForceWALCheckpoint(context);
+
+            var pk = entry.CurrentValues.GetValue<int>("UID");
+            HttpContext.Session.SetInt32("ActiveDataset", pk);
         }
 
         return new OkResult();
     }
 
+    /// <summary>
+    /// Returns the entire entry for the active dataset, as JSON. Possible security concern?
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public IActionResult GetDataset()
     {
-        var activeDatasetBytes = HttpContext.Session.Get("ActiveDataset")!;
+        var activeDatasetPk = HttpContext.Session.GetInt32("ActiveDataset")!;
 
         using (var context = new AppDatabaseContext())
         {
-            //context.Datasets.Add(dataset);
-            //await context.SaveChangesAsync();
+            var dataset = context.Datasets.Find(activeDatasetPk);
+            return new JsonResult(
+                dataset);
         }
-        return new JsonResult(
-            UserDataset.JsonFromBytes(activeDatasetBytes));
     }
 }
