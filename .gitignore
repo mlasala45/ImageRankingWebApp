@@ -5,3 +5,5 @@ node_modules/
 *.vsidx
 .vs/ImageRankingWebApp/FileContentIndex/ef315461-111d-453f-8a40-678c4c8e0887.vsidx
 *.vsidx
+webapi/obj/
+webapi/bin/
