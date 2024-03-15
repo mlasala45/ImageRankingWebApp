@@ -18,18 +18,19 @@ public class CreateDatasetController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateDataset([FromBody] string[] body)
+    public IActionResult CreateDataset([FromBody] CreateDatasetRequest requestBody)
     {
         //var str = "Received Create Database Request. Names: ";
         //foreach (var line in body) str += "\n" + line;
         //Console.WriteLine(str);
 
         var dataset = new UserDataset();
-        dataset.ImageNames = body;
+        dataset.Name = requestBody.Name;
+        dataset.ImageNames = requestBody.ImageNames;
         dataset.TimeCreated = DateTime.Now;
         dataset.AuthorConnectionID = HttpContext.Connection.Id;
 
-        Console.WriteLine($"[{dataset.AuthorConnectionID}] Created a new local dataset with {body.Length} entries.");
+        Console.WriteLine($"[{dataset.AuthorConnectionID}] Created a new local dataset named '{dataset.Name}' with {dataset.ImageNames.Length} entries.");
 
         using (var context = new AppDatabaseContext())
         {
@@ -64,5 +65,12 @@ public class CreateDatasetController : ControllerBase
             return new JsonResult(
                 dataset);
         }
+    }
+
+    [Serializable]
+    public class CreateDatasetRequest
+    {
+        public string Name { get; set; }
+        public string[] ImageNames { get; set; }
     }
 }

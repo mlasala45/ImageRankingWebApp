@@ -9,6 +9,7 @@ import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
 import img_err from './img_err.png'
 import './DatasetCreationUI.css'
 import PropTypes from 'prop-types';
@@ -86,6 +87,10 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
         for (const entry of loadedBitmaps) {
             data.push(entry.title)
         }
+        data = {
+            Name: document.getElementById("textfield-dataset-name").value,
+            ImageNames: data
+        }
         const response = await fetch("/backend/CreateDataset", {
             method: "POST",
             headers: {
@@ -97,17 +102,32 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
         if (response.ok) {
             appInst.setState({
                 ...appInst.state,
-                mode: 'pairwiseChoices'
+                mode: 'pairwiseChoices',
+                activeDatasetName: data.Name
             })
         }
     }
 
-    const NextButton = () => {
+    const BottomBar = () => {
         if (loadedBitmaps.length > 0) {
             return (
-                <div style={{height:50}}>
-                <Button variant="contained" sx={{ width: 100, float:'right', right:12 }}
-                        onClick={onClick_Next}>Next</Button></div>
+                <div style={{ height: 50 }}>
+                    <TextField id="textfield-dataset-name" label="Dataset Name" variant="outlined" required
+                    InputProps={{
+                        sx: { bgcolor: 'white', width:'inherit' },
+                        }}
+                        /*InputLabelProps={{
+                            sx: { transform: 'translate(14px, 10px) scale(1);' }
+                        }}*/
+                        sx={{
+                            left: 18,
+                            width: 372,
+                            height: '80%',
+                            flexDirection: 'row'
+                        }} />
+                    <Button variant="contained" sx={{ width: 100, float:'right', right:12 }}
+                        onClick={onClick_Next}>Next</Button>
+                </div>
         )
         }
     }
@@ -133,7 +153,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
                             onClick={onClick_SelectFolder}>Select Folder</Button>
                         {ImageListBody(loadedBitmaps)}
                     </Stack>
-                    {NextButton()}
+                    {BottomBar()}
                 </Box>
             </div>
         </React.Fragment>

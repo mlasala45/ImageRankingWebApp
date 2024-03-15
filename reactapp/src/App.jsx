@@ -12,6 +12,7 @@ export default class App extends Component {
         this.state = {
             mode: 'createDataset',
             bitmaps: {},
+            activeDatasetName: 'N/A'
         };
     }
 

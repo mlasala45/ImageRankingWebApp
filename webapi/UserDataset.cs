@@ -10,6 +10,8 @@ public class UserDataset
 {
     [Key]
     public int UID { get; set; }
+
+    public string Name { get; set; }
     public string[] ImageNames { get; set; }
 
     public DateTime TimeCreated { get; set; }

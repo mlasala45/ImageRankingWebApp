@@ -109,9 +109,10 @@ export default function VerticalTabs({ appInst }) {
     };
 
     return (
+        <div className = 'appMainLayout'>
+            <h2 style={{ color: '#a1a1a1' }} >Current Dataset: {appInst.state.activeDatasetName}</h2>
         <Box
-            sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: 500, width:'80%' }}
-            className='appMainLayout'
+                sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: '-webkit-fill-available' }}
         >
             <Tabs
                 orientation="vertical"
@@ -148,7 +149,8 @@ export default function VerticalTabs({ appInst }) {
             <TabPanel value={value} index={6}>
                 Item Seven
                 </TabPanel>
-        </Box>
+            </Box>
+        </div>
     );
 }
 
@@ -156,19 +158,19 @@ function TabPanel(props) {
     const { children, value, index, ...other } = props;
 
     return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`vertical-tabpanel-${index}`}
-            aria-labelledby={`vertical-tab-${index}`}
-            {...other}
-        >
+            <div
+                role="tabpanel"
+                hidden={value !== index}
+                id={`vertical-tabpanel-${index}`}
+                aria-labelledby={`vertical-tab-${index}`}
+                {...other}
+            >
             {value === index && (
                 <Box sx={{ p: 3 }}>
                     <Typography component='div'>{children}</Typography>
                 </Box>
             )}
-        </div>
+            </div>
     );
 }
 
