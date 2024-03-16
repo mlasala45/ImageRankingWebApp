@@ -5,7 +5,9 @@ using webapi;
 
 public class AppDatabaseContext : DbContext
 {
-    public DbSet<UserDataset> Datasets { get; set; }
+    public DbSet<ImageDataset> Datasets { get; set; }
+    public DbSet<PermanentUser> PermanentUsers { get; set; }
+    public DbSet<GuestUser> GuestUsers { get; set; }
 
     public string DbPath { get; }
 

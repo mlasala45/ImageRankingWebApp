@@ -4,9 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace webapi;
-
-public class UserDataset
+public class ImageDataset
 {
     [Key]
     public int UID { get; set; }
@@ -15,26 +13,28 @@ public class UserDataset
     public string[] ImageNames { get; set; }
 
     public DateTime TimeCreated { get; set; }
-    public string AuthorConnectionID { get; set; }
+    public string AuthorUID { get; set; }
+    public bool IsAuthorGuest { get; set; }
 
-    public UserDataset() {
+    public ImageDataset()
+    {
         ImageNames = new string[0];
     }
 
     public byte[] ToBytes()
     {
         var json = JsonConvert.SerializeObject(this);
-        return ASCIIEncoding.ASCII.GetBytes(json);
+        return Encoding.ASCII.GetBytes(json);
     }
 
-    public static UserDataset FromBytes(byte[] bytes)
+    public static ImageDataset FromBytes(byte[] bytes)
     {
         var json = JsonFromBytes(bytes);
-        return JsonConvert.DeserializeObject<UserDataset>(json);
+        return JsonConvert.DeserializeObject<ImageDataset>(json);
     }
 
     public static string JsonFromBytes(byte[] bytes)
     {
-        return ASCIIEncoding.ASCII.GetString(bytes);
+        return Encoding.ASCII.GetString(bytes);
     }
 }

@@ -33,6 +33,7 @@ app.UseAuthorization();
 
 app.UseSession();
 
+app.UsePathBase("/api");
 app.MapControllers();
 
 app.Run();

@@ -33,7 +33,7 @@ export default defineConfig({
     server: {
         proxy: {
             '^/backend': {
-                target: 'https://localhost:7281/', //https://webapi
+                target: 'https://localhost:7281/api/', //https://webapi
                 secure: false,
                 rewrite: (path) => path.replace(/^\/backend/, ''),
             },

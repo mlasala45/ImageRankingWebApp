@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace webapi.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    partial class AppDatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20240315230612_AddGuestAndPermanentUsers")]
+    partial class AddGuestAndPermanentUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");
@@ -22,16 +25,13 @@ namespace webapi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("AuthorUID")
+                    b.Property<string>("AuthorConnectionID")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageNames")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsAuthorGuest")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -51,10 +51,6 @@ namespace webapi.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastDateModified")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("OwnedDatasets")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("UID");

@@ -91,7 +91,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
             Name: document.getElementById("textfield-dataset-name").value,
             ImageNames: data
         }
-        const response = await fetch("/backend/CreateDataset", {
+        const response = await fetch("/backend/DatasetManagement/CreateDataset", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -134,9 +134,10 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
 
     useEffect(onLoad)
 
+    //Invisible Img tag is to ensure img_err is loaded. Provides a reference for JS functions to fetch and write to canvases.
     return (
         <React.Fragment>
-            <img id='img-err' src={img_err} style={{ display: 'none' }} ></img>
+            <img id='img-err' src={img_err} style={{ display: 'none' }} />
             <h2 style={{ marginInlineStart: '45px' }}>Create Dataset</h2>
             <div className='center-45'>
                 <Box sx={{
