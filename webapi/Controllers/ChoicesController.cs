@@ -17,7 +17,7 @@ public class ChoicesController : ControllerBase
         _logger = logger;
     }
 
-    UserDataset GetDatasetLocal()
+    ImageDataset GetDatasetLocal()
     {
         var activeDatasetPk = HttpContext.Session.GetInt32("ActiveDataset")!;
 
@@ -61,7 +61,7 @@ public class ChoicesController : ControllerBase
         }
 
         userChoices.choices.Add(choiceReport);
-        Console.WriteLine($"[{userChoices.userUID}]: ReportChoice (choice={choiceReport.compareCode})");
+        Console.WriteLine($"[{HttpContext.Connection.Id}]: ReportChoice (choice={choiceReport.compareCode})");
 
         HttpContext.Session.Set("UserChoices", userChoices.ToBytes());
 
