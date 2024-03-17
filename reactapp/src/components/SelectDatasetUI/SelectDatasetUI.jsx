@@ -20,7 +20,7 @@ import './SelectDatasetUI.css'
 import PropTypes from 'prop-types';
 import { DrawBitmapToCanvasCentered, GetDesiredBitmapForCanvas } from '../../util/BitmapUtil';
 
-export default function SelectDatasetUI({ appInst }) {
+export default function SelectDatasetUI({ appInst, onSelectNewDataset }) {
     const [listData, setListData] = useState([])
 
     async function fetchData() {
@@ -41,15 +41,28 @@ export default function SelectDatasetUI({ appInst }) {
     }
 
     async function onClick_SelectDatabase(i) {
-        const response = await fetch("/backend/DatasetManagement/SetActiveDataset?id=" + listData[i].uid, {
+        const response = await fetch("/backend/DatasetManagement/SetActiveDataset?id=" + listData[i].datasetKey, {
             method: "POST"
         })
         if (response.ok) {
-            appInst.setState({
-                ...appInst.state,
-                mode: 'pairwiseChoices',
-                activeDatasetName: listData[i].name
-            })
+            if (listData[i].isLocalToClient && !(listData[i].datasetKey in appInst.state.bitmaps)) {
+                appInst.setState({
+                    ...appInst.state,
+                    mode: 'selectLocalDatasetLocation',
+                    activeDatasetName: listData[i].name,
+                    activeDatasetKey: listData[i].datasetKey
+                })
+            }
+            else {
+                if(onSelectNewDataset != null) onSelectNewDataset();
+
+                appInst.setState({
+                    ...appInst.state,
+                    mode: 'pairwiseChoices',
+                    activeDatasetName: listData[i].name,
+                    activeDatasetKey: listData[i].datasetKey
+                })
+            }
         }
         else {
             console.log("Error setting active dataset.")
@@ -108,4 +121,5 @@ export default function SelectDatasetUI({ appInst }) {
 
 SelectDatasetUI.propTypes = {
     appInst: PropTypes.object.isRequired,
+    onSelectNewDataset: PropTypes.method
 };

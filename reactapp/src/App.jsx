@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import DatasetCreationUI from './components/DatasetCreationUI/DatasetCreationUI.jsx';
 import VerticalTabs from './components/AppMainLayout/AppMainLayout.jsx';
 import SelectDatasetUI from './components/SelectDatasetUI/SelectDatasetUI.jsx';
+import SelectLocalDatasetLocationUI from './components/SelectLocalDatasetLocationUI/SelectLocalDatasetLocationUI.jsx';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -13,7 +14,8 @@ export default class App extends Component {
         this.state = {
             mode: 'selectDataset',
             bitmaps: {},
-            activeDatasetName: 'N/A'
+            activeDatasetName: 'N/A',
+            activeDatasetKey: null
         };
     }
 
@@ -21,9 +23,10 @@ export default class App extends Component {
         this.populateWeatherData();
     }
 
-    registerBitmap(appInst, bitmap, key) {
+    registerBitmap(appInst, datasetKey, bitmap, bitmapKey) {
         const allBitmaps = appInst.state.bitmaps
-        allBitmaps[key] = bitmap
+        if (!(datasetKey in allBitmaps)) allBitmaps[datasetKey] = {}
+        allBitmaps[datasetKey][bitmapKey] = bitmap
         appInst.setState({ ...appInst.state })
     }
 
@@ -67,6 +70,9 @@ export default class App extends Component {
                 break;
             case 'pairwiseChoices':
                 contents = <VerticalTabs appInst={this} />
+                break;
+            case 'selectLocalDatasetLocation':
+                contents = <SelectLocalDatasetLocationUI registerBitmap={this.registerBitmap} appInst={this} />
                 break;
         }
 

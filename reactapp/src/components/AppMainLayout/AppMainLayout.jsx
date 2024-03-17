@@ -22,6 +22,7 @@ import Box from '@mui/material/Box';
 import './AppMainLayout.css'
 import RankingUI from '../RankingUI/RankingUI';
 import ChoiceHistoryUI from '../ChoiceHistoryUI/ChoiceHistoryUI';
+import SelectDatasetUI from '../SelectDatasetUI/SelectDatasetUI';
 
 const drawerWidth = 240;
 
@@ -108,13 +109,18 @@ export default function VerticalTabs({ appInst }) {
         setValue(index);
     };
 
+    const onSelectNewDataset = () => {
+        setValue(0)
+    }
+
     return (
         <div className = 'appMainLayout'>
             <h2 style={{ color: '#a1a1a1' }} >Current Dataset: {appInst.state.activeDatasetName}</h2>
         <Box
                 sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: '-webkit-fill-available' }}
-        >
-            <Tabs
+            >
+                <Tabs
+                id='appMainLayout-tabs'
                 orientation="vertical"
                 value={value}
                 onChange={handleChange}
@@ -126,6 +132,7 @@ export default function VerticalTabs({ appInst }) {
                 <Tab label="Rank Predictions" {...a11yProps(1)} />
                 <Tab label="Choice History" {...a11yProps(2)} />
                 <Tab label="Tools" {...a11yProps(3)} />
+                <Tab label="Switch Dataset" {...a11yProps(3)} />
             </Tabs>
 
             <TabPanel value={value} index={0}>
@@ -140,8 +147,8 @@ export default function VerticalTabs({ appInst }) {
             <TabPanel value={value} index={3}>
                 Tools
             </TabPanel>
-            <TabPanel value={value} index={4}>
-                Item Five
+                <TabPanel value={value} index={4}>
+                    <SelectDatasetUI appInst={appInst} onSelectNewDataset={onSelectNewDataset} />
             </TabPanel>
             <TabPanel value={value} index={5}>
                 Item Six

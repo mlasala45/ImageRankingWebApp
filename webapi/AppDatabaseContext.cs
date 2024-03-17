@@ -8,6 +8,8 @@ public class AppDatabaseContext : DbContext
     public DbSet<ImageDataset> Datasets { get; set; }
     public DbSet<PermanentUser> PermanentUsers { get; set; }
     public DbSet<GuestUser> GuestUsers { get; set; }
+    public DbSet<RankingChoice> RankingChoices { get; set; }
+
 
     public string DbPath { get; }
 

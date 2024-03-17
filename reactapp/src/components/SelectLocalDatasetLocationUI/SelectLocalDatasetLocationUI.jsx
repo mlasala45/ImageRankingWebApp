@@ -11,7 +11,7 @@ import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import img_err from './img_err.png'
-import './DatasetCreationUI.css'
+import './SelectLocalDatasetLocationUI.css'
 import PropTypes from 'prop-types';
 import { DrawBitmapToCanvasCentered, GetDesiredBitmapForCanvas } from '../../util/BitmapUtil';
 
@@ -37,19 +37,19 @@ const ImageListBody = (loadedBitmaps) => {
         </div>)
 }
 
-export default function DatasetCreationUI({ registerBitmap, appInst }) {
+export default function SelectLocalDatasetLocationUI({ registerBitmap, appInst }) {
     const [loadedBitmaps, setLoadedBitmaps] = useState([])
 
     const onLoad = () => {
+        console.log("OnLoad")
         const imageList = document.getElementById('image-list')
         const canvases = imageList.getElementsByTagName('canvas')
-
-        //Modify DOM elements
-        //For each canvas under the image list...
         for (const canvas of canvases) {
-            //Determine the desired bitmap, then draw it to the canvas
-            //We have to do it this way if we want to display runtime bitmaps in DOM (AFAIK)
-            const bitmap = GetDesiredBitmapForCanvas(canvas, appInst, "new-dataset")
+            //const id = canvas.id;
+            //const regex = /(\d+)/;
+            //const match = id.match(regex);
+            //const number = parseInt(match[0]);
+            const bitmap = GetDesiredBitmapForCanvas(canvas, appInst, appInst.state.activeDatasetKey)
             DrawBitmapToCanvasCentered(bitmap, canvas)
         }
     }
@@ -78,7 +78,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
                 //Attempt to load the file contents as a bitmap
                 bitmap = await createImageBitmap(file)
                 //On success, register the bitmap to app-level storage
-                registerBitmap(appInst, "new-dataset", bitmap, k)
+                registerBitmap(appInst, appInst.state.activeDatasetKey, bitmap, k)
             }
             catch (e) {
                 //On failure, create a bitmap of the error image
@@ -97,62 +97,21 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
         label.style.visibility = 'visible'
     }
 
-    const onClick_Next = async () => {
-        //Create a list of all the image filenames from the component memory
-        let data = []
-        for (const entry of loadedBitmaps) {
-            data.push(entry.title)
-        }
-        //Compose request body
-        data = {
-            Name: document.getElementById("textfield-dataset-name").value,
-            ImageNames: data
-        }
-        //Post the new dataset's information to the backend
-        const response = await fetch("/backend/DatasetManagement/CreateDataset", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data)
+    const onClick_Ok = async () => {
+        //TODO: Associate the bitmaps with the active dataset
+        
+        appInst.setState({
+            ...appInst.state,
+            mode: 'pairwiseChoices'
         })
-
-        //On success, switch the app into 'Choices' mode
-        //On fail, do nothing
-        //TODO: Display error on fail
-        if (response.ok) {
-            const json = await response.json()
-
-            appInst.state.bitmaps[json.datasetKey] = appInst.state.bitmaps['new-dataset']
-            appInst.state.bitmaps['new-dataset'] = null
-            appInst.setState({
-                ...appInst.state,
-                mode: 'pairwiseChoices',
-                activeDatasetName: data.Name,
-                activeDatasetKey: json.datasetKey
-            })
-        }
     }
 
     const BottomBar = () => {
         if (loadedBitmaps.length > 0) {
             return (
                 <div style={{ height: 50 }}>
-                    <TextField id="textfield-dataset-name" label="Dataset Name" variant="outlined" required
-                    InputProps={{
-                        sx: { bgcolor: 'white', width:'inherit' },
-                        }}
-                        /*InputLabelProps={{
-                            sx: { transform: 'translate(14px, 10px) scale(1);' }
-                        }}*/
-                        sx={{
-                            left: 18,
-                            width: 372,
-                            height: '80%',
-                            flexDirection: 'row'
-                        }} />
                     <Button variant="contained" sx={{ width: 100, float:'right', right:12 }}
-                        onClick={onClick_Next}>Next</Button>
+                        onClick={onClick_Ok}>Ok</Button>
                 </div>
         )
         }
@@ -164,8 +123,9 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
     return (
         <React.Fragment>
             <img id='img-err' src={img_err} style={{ display: 'none' }} />
-            <h2 style={{ marginInlineStart: '45px' }}>Create Dataset</h2>
+            <h2 style={{ marginInlineStart: '45px' }}>Select Local Dataset Location</h2>
             <div className='center-45'>
+                <h2 style={{ marginInlineStart: '45px', display:'inline' }}>Please specify the location of this dataset on your computer:</h2>
                 <Box sx={{
                     bgcolor: '#6f6f7d',
                     borderRadius: 2,
@@ -187,7 +147,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
     );
 }
 
-DatasetCreationUI.propTypes = {
+SelectLocalDatasetLocationUI.propTypes = {
     registerBitmap: PropTypes.func.isRequired,
     appInst: PropTypes.object.isRequired,
 };

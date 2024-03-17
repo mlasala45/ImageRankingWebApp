@@ -25,6 +25,11 @@ public class DatasetManagementController : ControllerBase
         //foreach (var line in body) str += "\n" + line;
         //Console.WriteLine(str);
 
+        if(requestBody.ImageNames.Length < 2)
+        {
+            return new BadRequestResult();
+        }
+
         var dataset = new ImageDataset();
         dataset.Name = requestBody.Name;
         dataset.ImageNames = requestBody.ImageNames;
@@ -54,9 +59,9 @@ public class DatasetManagementController : ControllerBase
 
             context.SaveChanges();
             DatabaseUtility.ForceWALCheckpoint(context);
-        }
 
-        return new OkResult();
+            return new JsonResult(new { datasetKey=pk });
+        }
     }
 
 
@@ -81,6 +86,7 @@ public class DatasetManagementController : ControllerBase
 
     /// <summary>
     /// Returns the entire entry for the active dataset, as JSON. Possible security concern?
+    /// Also currently not used by anything
     /// </summary>
     /// <returns></returns>
     [HttpGet("GetDataset")]
@@ -115,7 +121,7 @@ public class DatasetManagementController : ControllerBase
                     responseEntry.IsLocalToClient = true;
                     responseEntry.Name = dataset.Name;
                     responseEntry.NumImages = dataset.ImageNames.Length;
-                    responseEntry.UID = dataset.UID;
+                    responseEntry.DatasetKey = dataset.UID;
 
                     list.Add(responseEntry);
                 }
@@ -136,7 +142,7 @@ public class DatasetManagementController : ControllerBase
     public class DatasetsListResponseEntry
     {
         public string Name { get; set; }
-        public int UID { get; set; }
+        public int DatasetKey { get; set; }
         public int NumImages { get; set; }
         public bool IsLocalToClient { get; set; }
 }

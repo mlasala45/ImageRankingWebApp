@@ -131,7 +131,7 @@ export default function RankingUI({ appInst }) {
         }
         if (choicesQueueLocal.length < 1) await requestNewChoice()
 
-        const getBitmap = (key) => appInst.state.bitmaps[key];
+        const getBitmap = (key) => appInst.state.bitmaps[appInst.state.activeDatasetKey][key];
         DrawBitmapToCanvasCentered(getBitmap(choices.current.left), leftCanvases[0])
         DrawBitmapToCanvasCentered(getBitmap(choices.next.left), leftCanvases[1])
         DrawBitmapToCanvasCentered(getBitmap(choices.current.right), rightCanvases[0])

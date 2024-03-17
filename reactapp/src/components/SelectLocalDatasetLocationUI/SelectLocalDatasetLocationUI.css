@@ -1,0 +1,27 @@
+.center-45 {
+    margin: 0;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.stack {
+    padding: 15px;
+    align-items: center;
+}
+
+h2 {
+    color: #232a30;
+    line-height: 0;
+}
+.loadingReportLabel {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    visibility: hidden;
+}
+.scrollRect {
+    overflow-y: auto;
+    max-height: 430px;
+}
