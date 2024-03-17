@@ -41,56 +41,74 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
     const [loadedBitmaps, setLoadedBitmaps] = useState([])
 
     const onLoad = () => {
-        console.log("OnLoad")
         const imageList = document.getElementById('image-list')
         const canvases = imageList.getElementsByTagName('canvas')
+
+        //Modify DOM elements
+        //For each canvas under the image list...
         for (const canvas of canvases) {
-            //const id = canvas.id;
-            //const regex = /(\d+)/;
-            //const match = id.match(regex);
-            //const number = parseInt(match[0]);
+            //Determine the desired bitmap, then draw it to the canvas
+            //We have to do it this way if we want to display runtime bitmaps in DOM (AFAIK)
             const bitmap = GetDesiredBitmapForCanvas(canvas, appInst)
             DrawBitmapToCanvasCentered(bitmap, canvas)
         }
     }
 
     const onClick_SelectFolder = async () => {
+        //Acquire and validate directory selection
         const dirHandle = await window.showDirectoryPicker();
         if (!dirHandle) {
             alert("No selection");
             return
         }
+
         let count = 0;
         let loadedBitmapsLocal = []
+        //For each file in the directory...
         for await (const [k, v] of dirHandle.entries()) {
+            //Skip it if it's not an image
+            var extension = k.split('.').pop().toLowerCase();
+            const valid_extensions = ["png", "jpg", "jpeg"]
+            if (!valid_extensions.includes(extension)) continue;
+
             count++;
             const file = await v.getFile()
             let bitmap
             try {
+                //Attempt to load the file contents as a bitmap
                 bitmap = await createImageBitmap(file)
+                //On success, register the bitmap to app-level storage
                 registerBitmap(appInst, bitmap, k)
             }
             catch (e) {
+                //On failure, create a bitmap of the error image
+                //NOTE: This wastes memory since we only need one copy of the error bitmap, but it's probably not worth fixing
                 bitmap = await createImageBitmap(document.getElementById('img-err'))
             }
+            //Save the bitmap to the component-level storage the ImageList uses (with its title).
             loadedBitmapsLocal.push({ img: bitmap, title: k })
         }
 
-        setLoadedBitmaps(loadedBitmapsLocal)
+        setLoadedBitmaps(loadedBitmapsLocal) //Push the updated bitmap list to component state
+
+        //Update the element that reports the number of images loaded
         const label = document.getElementById('loadingReportLabel')
         label.innerText = count + " Images Loaded"
         label.style.visibility = 'visible'
     }
 
     const onClick_Next = async () => {
+        //Create a list of all the image filenames from the component memory
         let data = []
         for (const entry of loadedBitmaps) {
             data.push(entry.title)
         }
+        //Compose request body
         data = {
             Name: document.getElementById("textfield-dataset-name").value,
             ImageNames: data
         }
+        //Post the new dataset's information to the backend
         const response = await fetch("/backend/DatasetManagement/CreateDataset", {
             method: "POST",
             headers: {
@@ -99,6 +117,9 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
             body: JSON.stringify(data)
         })
 
+        //On success, switch the app into 'Choices' mode
+        //On fail, do nothing
+        //TODO: Display error on fail
         if (response.ok) {
             appInst.setState({
                 ...appInst.state,
