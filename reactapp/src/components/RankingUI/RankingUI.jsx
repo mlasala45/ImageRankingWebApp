@@ -90,8 +90,8 @@ export default function RankingUI({ appInst }) {
 
     const reportChoice = async (isLeft) => {
         const data = {
-            left: choices.current.left,
-            right: choices.current.right,
+            leftKey: choices.current.leftKey,
+            rightKey: choices.current.rightKey,
             compareCode: (isLeft ? 1 : -1)
         }
         await fetch("/backend/Choices/ReportChoice", {

@@ -8,14 +8,14 @@ using System.Text;
 public class RankingChoice
 {
     [Key]
-    public string UID { get; set; }
+    public int UID { get; set; }
 
-    public int datasetKey;
-    public string user;
+    public int datasetKey { get; set; }
+    public string user { get; set; }
 
-    public int promptLeftIndex;
-    public int promptRightIndex;
-    public int choice;
+    public int promptLeftIndex { get; set; }
+    public int promptRightIndex { get; set; }
+    public int choice { get; set; }
 
     public DateTime TimeStamp { get; set; }
 

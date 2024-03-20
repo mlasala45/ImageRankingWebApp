@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Data;
 using System.Numerics;
 using System.Text;
 using System.Xml.Linq;
@@ -42,28 +43,32 @@ public class ChoicesController : ControllerBase
         return new JsonResult(new
         {
             left = dataset.ImageNames[firstChoice],
-            right = dataset.ImageNames[secondChoice]
+            right = dataset.ImageNames[secondChoice],
+            leftKey = firstChoice,
+            rightKey = secondChoice
         });
     }
 
     [HttpPost("ReportChoice")]
     public IActionResult ReportChoice([FromBody] ChoiceReport choiceReport)
     {
-        UserChoices userChoices;
-        if(HttpContext.Session.Keys.Contains("UserChoices"))
-        {
-            userChoices = UserChoices.FromBytes(HttpContext.Session.Get("UserChoices"));
-        }
-        else
-        {
-            userChoices = new UserChoices();
-            userChoices.userUID = HttpContext.Connection.Id;
-        }
+        var Session = HttpContext.Session;
 
-        userChoices.choices.Add(choiceReport);
-        Console.WriteLine($"[{HttpContext.Connection.Id}]: ReportChoice (choice={choiceReport.compareCode})");
+        RankingChoice choice = new();
+        choice.TimeStamp = DateTime.Now;
 
-        HttpContext.Session.Set("UserChoices", userChoices.ToBytes());
+        choice.datasetKey = Session.GetInt32("ActiveDataset")!.Value;
+        choice.user = Session.GetString("UserId")!;
+
+        choice.promptLeftIndex = choiceReport.leftKey;
+        choice.promptRightIndex = choiceReport.rightKey;
+        choice.choice = choiceReport.compareCode;
+
+        using (var context = new AppDatabaseContext())
+        {
+            context.RankingChoices.Add(choice);
+            context.SaveChanges();
+        }
 
         return new OkResult();
     }
@@ -72,8 +77,8 @@ public class ChoicesController : ControllerBase
 public class ChoiceReport
 {
     public int compareCode { get; set; }
-    public string left { get; set; }
-    public string right { get; set; }
+    public int leftKey { get; set; }
+    public int rightKey { get; set; }
 }
 
 public class UserChoices
