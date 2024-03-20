@@ -72,6 +72,28 @@ public class ChoicesController : ControllerBase
 
         return new OkResult();
     }
+
+    [HttpGet("GetChoiceHistory")]
+    public IActionResult GetChoiceHistory(int num_per_page = 50, int page = 0)
+    {
+        var Session = HttpContext.Session;
+        var userId = Session.GetString("UserId")!;
+        using (var context = new AppDatabaseContext())
+        {
+            var allUserChoicesQuery = context.RankingChoices.Where(e => e.user == userId);
+            var userChoices = allUserChoicesQuery
+                .OrderByDescending(e => e.TimeStamp)
+                .Skip(num_per_page * page)
+                .Take(num_per_page)
+                .ToList();
+            var response = new ChoiceHistoryResponse();
+            response.choices = userChoices.ToArray();
+            response.page = page;
+            response.num_per_page = num_per_page;
+            response.num_total = allUserChoicesQuery.Count();
+            return new JsonResult(response);
+        }
+    }
 }
 
 public class ChoiceReport
@@ -81,7 +103,15 @@ public class ChoiceReport
     public int rightKey { get; set; }
 }
 
-public class UserChoices
+public class ChoiceHistoryResponse
+{
+    public RankingChoice[] choices { get; set; }
+    public int num_total { get; set; }
+    public int num_per_page { get; set; }
+    public int page { get; set; }
+}
+
+    public class UserChoices
 {
     public string userUID;
     public List<ChoiceReport> choices = new();
