@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Numerics;
 using System.Text;
@@ -86,8 +87,16 @@ public class ChoicesController : ControllerBase
                 .Skip(num_per_page * page)
                 .Take(num_per_page)
                 .ToList();
+
+            var dataset = GetDatasetLocal();
+            var imageNames = dataset.ImageNames;
+
             var response = new ChoiceHistoryResponse();
-            response.choices = userChoices.ToArray();
+            response.choices = new RankingChoiceResponse[userChoices.Count];
+            for (int i = 0; i < userChoices.Count; i++)
+            {
+                response.choices[i] = new RankingChoiceResponse(userChoices[i], i, ref imageNames);
+            }
             response.page = page;
             response.num_per_page = num_per_page;
             response.num_total = allUserChoicesQuery.Count();
@@ -103,15 +112,44 @@ public class ChoiceReport
     public int rightKey { get; set; }
 }
 
+[Serializable]
+public class RankingChoiceResponse
+{
+    public int Id { get; set; }
+    public string user { get; set; }
+
+    public string imgLeft { get; set; }
+    public string imgRight { get; set; }
+    public int choice { get; set; }
+
+    public DateTime TimeStamp { get; set; }
+
+    public RankingChoiceResponse() { }
+
+    public RankingChoiceResponse(RankingChoice choiceData, int id, ref string[] datasetNames)
+    {
+        this.Id = id;
+
+        user = choiceData.user;
+        imgLeft = datasetNames[choiceData.promptLeftIndex];
+        imgRight = datasetNames[choiceData.promptRightIndex];
+
+        choice = choiceData.choice;
+
+        TimeStamp = choiceData.TimeStamp;
+    }
+}
+
+
 public class ChoiceHistoryResponse
 {
-    public RankingChoice[] choices { get; set; }
+    public RankingChoiceResponse[] choices { get; set; }
     public int num_total { get; set; }
     public int num_per_page { get; set; }
     public int page { get; set; }
 }
 
-    public class UserChoices
+public class UserChoices
 {
     public string userUID;
     public List<ChoiceReport> choices = new();

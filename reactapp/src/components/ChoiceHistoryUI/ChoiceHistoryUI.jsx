@@ -47,18 +47,33 @@ const columns = [
         width: 110,
     },
     {
-        field: 'timestamp',
+        field: 'timeStamp',
         headerName: 'Time Stamp',
         type: 'dateTime',
         width: 160,
+        valueGetter: (rowData) => {
+            return new Date(Date.parse(rowData.value)) //2024-03-20T13:18:34.2560009
+        }
     },
 ];
 
-const rows = [
+/*const rows = [
     { id:0, imgLeft: "red.png", imgRight: "blu.png", choice: -1, user: "Local", timestamp: new Date() }
-]
+]*/
 
-export default function ChoiceHistoryUI() {
+export default function ChoiceHistoryUI({ appInst }) {
+    const [rows, setRows] = useState([])
+    
+    async function fetchData() {
+        const response = await fetch("/backend/Choices/GetChoiceHistory")
+        let json = await response.json()
+
+        setRows(json.choices)
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
 
     return (
         <DataGrid
@@ -76,4 +91,5 @@ export default function ChoiceHistoryUI() {
 }
 
 ChoiceHistoryUI.propTypes = {
+    appInst: PropTypes.object
 };
