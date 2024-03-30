@@ -1,0 +1,38 @@
+import { useEffect, useRef, forwardRef } from 'react';
+import { DrawBitmapToCanvasCentered } from '../../util/BitmapUtil';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+
+const BitmapCanvas = forwardRef(function BitmapCanvas({ bitmap, name, width, height, setBitmapRef }) {
+    const canvasRef = useRef(null)
+    function setBitmap(bitmap) {
+        DrawBitmapToCanvasCentered(bitmap, canvasRef.current)
+    }
+
+    setBitmapRef = setBitmap
+
+    useEffect(() => {
+        if (bitmap != null) setBitmap(bitmap)
+    })
+
+    return (
+        <Tooltip title={name}>
+            <Box sx={{
+                bgcolor: '#3f3f47',
+                borderColor: 'black',
+                border: 1,
+                height: 1
+            }}>
+                <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} width={width} height={height} /></Box>
+        </Tooltip>);
+})
+
+export default BitmapCanvas
+
+BitmapCanvas.propTypes = {
+    bitmapKey: PropTypes.string,
+    width: PropTypes.string,
+    height: PropTypes.string,
+    setBitmapRef: PropTypes.object
+}

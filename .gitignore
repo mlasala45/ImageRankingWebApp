@@ -7,3 +7,6 @@ node_modules/
 *.vsidx
 webapi/obj/
 webapi/bin/
+.vs/ProjectEvaluation/imagerankingwebapp.metadata.v7.bin
+.vs/ProjectEvaluation/imagerankingwebapp.projects.v7.bin
+/.vs/ImageRankingWebApp/v17

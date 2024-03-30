@@ -15,3 +15,7 @@ export function DrawBitmapToCanvasCentered(bitmap, canvas) {
 export function GetDesiredBitmapForCanvas(canvas, appInst, datasetKey) {
     return appInst.state.bitmaps[datasetKey][canvas.dataset.imgKey];
 }
+
+export function GetBitmapFromActiveDataset(appInst, bitmapKey) {
+    return appInst.state.bitmaps[appInst.state.activeDatasetKey][bitmapKey]
+}

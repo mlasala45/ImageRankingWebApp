@@ -141,8 +141,8 @@ export default function VerticalTabs({ appInst }) {
             <TabPanel value={value} index={1}>
                 Rank Predictions
             </TabPanel>
-            <TabPanel value={value} index={2}>
-                <ChoiceHistoryUI/>
+                <TabPanel value={value} index={2}>
+                    <ChoiceHistoryUI appInst={appInst} />
             </TabPanel>
             <TabPanel value={value} index={3}>
                 Tools
