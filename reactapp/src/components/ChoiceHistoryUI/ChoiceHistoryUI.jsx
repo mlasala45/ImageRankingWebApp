@@ -42,8 +42,8 @@ export default function ChoiceHistoryUI({ appInst }) {
                 if (!params.value) {
                     return params.value;
                 }
-                if (params.value == -1) return ">"
-                if (params.value == 1) return "<"
+                if (params.value == -1) return "<"
+                if (params.value == 1) return ">"
                 return "="
             },
             cellClassName: 'table-cell-bold',
