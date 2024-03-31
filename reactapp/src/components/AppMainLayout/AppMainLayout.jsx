@@ -23,6 +23,7 @@ import './AppMainLayout.css'
 import RankingUI from '../RankingUI/RankingUI';
 import ChoiceHistoryUI from '../ChoiceHistoryUI/ChoiceHistoryUI';
 import SelectDatasetUI from '../SelectDatasetUI/SelectDatasetUI';
+import RankPredictionsUI from '../RankPredictionsUI/RankPredictionsUI';
 
 const drawerWidth = 240;
 
@@ -138,8 +139,8 @@ export default function VerticalTabs({ appInst }) {
             <TabPanel value={value} index={0}>
                 <RankingUI appInst={appInst} />
             </TabPanel>
-            <TabPanel value={value} index={1}>
-                Rank Predictions
+                <TabPanel value={value} index={1}>
+                    <RankPredictionsUI appInst={appInst} />
             </TabPanel>
                 <TabPanel value={value} index={2}>
                     <ChoiceHistoryUI appInst={appInst} />

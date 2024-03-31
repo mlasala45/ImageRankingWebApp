@@ -79,9 +79,10 @@ public class ChoicesController : ControllerBase
     {
         var Session = HttpContext.Session;
         var userId = Session.GetString("UserId")!;
+        var activeDatasetPk = Session.GetInt32("ActiveDataset")!;
         using (var context = new AppDatabaseContext())
         {
-            var allUserChoicesQuery = context.RankingChoices.Where(e => e.user == userId);
+            var allUserChoicesQuery = context.RankingChoices.Where(e => (e.user == userId) && (e.datasetKey == activeDatasetPk));
             var userChoices = allUserChoicesQuery
                 .OrderByDescending(e => e.TimeStamp)
                 .Skip(num_per_page * page)
