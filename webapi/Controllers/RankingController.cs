@@ -72,6 +72,7 @@ public class RankingController : ControllerBase
                 var numChoices = numLesser[i] + numGreater[i];
                 entry.Ranking = numChoices == 0 ? 0.5f : numLesser[i] / (float)(numChoices);
                 entry.Certainty = CalulcateNaiveCertainty(numChoices, (uint)dataset.ImageNames.Length);
+                entry.NumRelatedChoices = (int)numChoices;
 
                 list.Add(entry);
             }
@@ -90,6 +91,8 @@ public class SingleImageRankingResponse
     public string ImageName { get; set; }
     public float Ranking { get; set; }
     public float Certainty { get; set; }
+
+    public int NumRelatedChoices { get; set; }
 
     public SingleImageRankingResponse(string imageName)
     {

@@ -76,6 +76,13 @@ export default function RankPredictionsUI({ appInst }) {
                     negative: params.value < 70,
                 }),
         },
+        {
+            field: 'numRelatedChoices',
+            headerName: "Num Choices",
+            width: 100,
+            type: 'number',
+            align: 'center'
+        }
     ];
 
     const [rows, setRows] = useState([])
