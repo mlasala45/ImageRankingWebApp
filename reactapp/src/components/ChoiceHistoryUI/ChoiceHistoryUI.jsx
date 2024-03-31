@@ -10,7 +10,7 @@ import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import "./ChoiceHistoryUI.css"
 import BitmapCanvas from '../BitmapCanvas/BitmapCanvas';
@@ -101,7 +101,15 @@ export default function ChoiceHistoryUI({ appInst }) {
             },
         }}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
+            checkboxSelection
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+                toolbar: {
+                    csvOptions: {
+                        fileName: `Choice History - ${appInst.state.activeDatasetName} - ${new Date().toISOString()}`,
+                    }
+                }
+            }}
     />
     );
 }

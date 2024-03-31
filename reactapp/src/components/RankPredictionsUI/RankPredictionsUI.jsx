@@ -10,7 +10,7 @@ import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import clsx from 'clsx';
 
 import "./RankPredictionsUI.css"
@@ -23,7 +23,7 @@ import { GetBitmapFromActiveDataset } from '../../util/BitmapUtil';
 
 export default function RankPredictionsUI({ appInst }) {
 
-    const renderCell_img = function(params) {
+    const renderCell_img = function (params) {
         const bitmap = GetBitmapFromActiveDataset(appInst, params.value);
         return (<BitmapCanvas bitmap={bitmap} name={params.value} width='100px' height='100px' />)
     }
@@ -86,7 +86,7 @@ export default function RankPredictionsUI({ appInst }) {
     ];
 
     const [rows, setRows] = useState([])
-    
+
     async function fetchData() {
         const response = await fetch("/backend/Ranking/GetDatasetRankings")
         let json = await response.json()
@@ -135,7 +135,16 @@ export default function RankPredictionsUI({ appInst }) {
                     borderRight: '1px solid lightgray',
                     borderLeft: '1px solid lightgray',
                 },
-            } }
+            }}
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+                toolbar: {
+                    csvOptions: {
+                        fileName: `Rank Predictions - ${appInst.state.activeDatasetName} - ${new Date().toISOString()}`,
+                        fields: ['imageName', 'ranking', 'certainty','numRelatedChoices']
+                    }
+                }
+            }}
     />
     );
 }
