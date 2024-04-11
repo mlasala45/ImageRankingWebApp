@@ -10,7 +10,7 @@ COPY ./webapi /source
 
 WORKDIR /source
 
-# This is the architecture youâ€™re building for, which is passed in by the builder.
+# This is the architecture you’re building for, which is passed in by the builder.
 # Placing it here allows the previous steps to be cached across architectures.
 ARG TARGETARCH
 
@@ -22,10 +22,23 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
     dotnet publish -a ${TARGETARCH/amd64/x64} --use-current-runtime --self-contained false -o /app
 
 ################################################################################
+# Node Image
+
+FROM node:18-alpine AS node_base
+
+################################################################################
 # Run Environmnent - reactapp
 
-FROM nginx AS final-reactapp
-COPY reactapp/dist/ /usr/share/nginx/html
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS final-reactapp
+COPY --from=node_base . .
+
+WORKDIR /app
+COPY /reactapp /app/reactapp
+
+WORKDIR reactapp
+RUN npm install
+#ENTRYPOINT ["pwd"]
+ENTRYPOINT ["npm","run","dev"]
 
 ################################################################################
 # Run Environmnent - webapi

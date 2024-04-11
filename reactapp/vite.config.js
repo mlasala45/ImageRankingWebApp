@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url';
 
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
+import topLevelAwait from "vite-plugin-top-level-await";
 import fs from 'fs';
 import path from 'path';
 
@@ -23,7 +24,15 @@ const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [plugin()],
+    plugins: [
+        plugin(),
+        topLevelAwait({
+            // The export name of top-level await promise for each chunk module
+            promiseExportName: "__tla",
+            // The function to generate import names of top-level await promise in each chunk module
+            promiseImportName: i => `__tla_${i}`
+        })
+    ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -32,8 +41,8 @@ export default defineConfig({
     base: './',
     server: {
         proxy: {
-            '^/backend': {
-                target: 'https://localhost:7281/api/', //https://webapi
+            '/backend': {
+                target: 'https://webapi/api/', //https://webapi //https://localhost:7281
                 secure: false,
                 rewrite: (path) => path.replace(/^\/backend/, ''),
             },

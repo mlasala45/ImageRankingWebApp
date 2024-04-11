@@ -11,22 +11,23 @@
     "predev": "node aspnetcore-https.js"
   },
   "dependencies": {
+    "@emotion/react": "latest",
+    "@emotion/styled": "latest",
+    "@mui/icons-material": "latest",
+    "@mui/material": "latest",
+    "@mui/x-data-grid": "latest",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "vite-plugin-top-level-await": "^1.4.1"
   },
-    "devDependencies": {
-        "@types/react": "^18.2.43",
-        "@types/react-dom": "^18.2.17",
-        "@vitejs/plugin-react": "^4.2.1",
-        "eslint": "^8.55.0",
-        "eslint-plugin-react": "^7.33.2",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "eslint-plugin-react-refresh": "^0.4.5",
-        "vite": "^5.0.8",
-        "@mui/material": "latest",
-        "@mui/icons-material": "latest",
-        "@emotion/react": "latest",
-        "@emotion/styled": "latest",
-        "@mui/x-data-grid": "latest"
-    }
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "vite": "^5.0.8"
+  }
 }
