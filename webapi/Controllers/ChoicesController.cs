@@ -56,7 +56,7 @@ public class ChoicesController : ControllerBase
         var Session = HttpContext.Session;
 
         RankingChoice choice = new();
-        choice.TimeStamp = DateTime.Now;
+        choice.TimeStamp = DateTime.UtcNow;
 
         choice.datasetKey = Session.GetInt32("ActiveDataset")!.Value;
         choice.user = Session.GetString("UserId")!;

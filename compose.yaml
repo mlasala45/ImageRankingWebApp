@@ -20,8 +20,25 @@ services:
       context: ./
       target: final-reactapp
     ports:
-      - target: 5173
-        published: 5173
+      - target: 80
+        published: 80
+  db:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+
+    ports:
+      - target: 5432
+        published: 5432
+    environment:
+      POSTGRES_PASSWORD: example
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

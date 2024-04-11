@@ -9,12 +9,12 @@ public static class DatabaseUtility
     /// <param name="context"></param>
     public static void GuaranteeWALAutoCheckpoint(DbContext context)
     {
-        ExecuteDbCommand(context, "PRAGMA wal_autocheckpoint=1;");
+        //ExecuteDbCommand(context, "PRAGMA wal_autocheckpoint=1;");
     }
 
     public static void ForceWALCheckpoint(DbContext context)
     {
-        ExecuteDbCommand(context, "PRAGMA wal_checkpoint(FULL);");
+        //ExecuteDbCommand(context, "PRAGMA wal_checkpoint(FULL);");
     }
 
     private static void ExecuteDbCommand(DbContext context, string commandText)

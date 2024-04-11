@@ -34,7 +34,7 @@ public class DatasetManagementController : ControllerBase
         var dataset = new ImageDataset();
         dataset.Name = requestBody.Name;
         dataset.ImageNames = requestBody.ImageNames;
-        dataset.TimeCreated = DateTime.Now;
+        dataset.TimeCreated = DateTime.UtcNow;
         dataset.AuthorUID = HttpContext.Session.GetString("UserId")!;
         dataset.IsAuthorGuest = HttpContext.Session.GetBool("IsUserGuest");
 

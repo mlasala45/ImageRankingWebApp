@@ -45,7 +45,7 @@ public class UsersController : ControllerBase
         using (var context = new AppDatabaseContext())
         {
             GuestUser user = new();
-            user.LastDateModified = DateTime.Now;
+            user.LastDateModified = DateTime.UtcNow;
             int i = 0;
             int sentinel = 0;
             do

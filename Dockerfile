@@ -26,6 +26,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 
 FROM nginx AS final-reactapp
 COPY reactapp/dist/ /usr/share/nginx/html
+COPY reactapp/nginx/conf/nginx.conf /etc/nginx/conf.d/default.conf
 
 ################################################################################
 # Run Environmnent - webapi
