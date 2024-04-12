@@ -41,8 +41,9 @@
   color: #888;
 }
 
-.google-login {
+.login-stack {
     right: 10px;
-    top: 10px;
+    top: 20px;
     position: absolute;
+    align-items: end;
 }

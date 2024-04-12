@@ -8,6 +8,8 @@ import SelectLocalDatasetLocationUI from './components/SelectLocalDatasetLocatio
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
 import { GOOGLE_CLIENT_ID } from './constants.jsx';
+import Stack from '@mui/material/Stack';
+import { jwtDecode } from "jwt-decode";
 
 import './App.css'
 
@@ -20,7 +22,10 @@ export default class App extends Component {
             mode: 'selectDataset',
             bitmaps: {},
             activeDatasetName: 'N/A',
-            activeDatasetKey: null
+            activeDatasetKey: null,
+            loginState: {
+                loginType: 'guest'
+            }
         };
     }
 
@@ -32,6 +37,26 @@ export default class App extends Component {
         if (!(datasetKey in allBitmaps)) allBitmaps[datasetKey] = {}
         allBitmaps[datasetKey][bitmapKey] = bitmap
         appInst.setState({ ...appInst.state })
+    }
+
+    onLoginSuccess(credential) {
+        const responsePayload = jwtDecode(credential);
+        console.log(responsePayload)
+
+        this.setState({
+            ...this.state,
+            loginState: {
+                loginType: 'google',
+                credential: credential,
+                credentialPayload: responsePayload,
+                name: responsePayload.name
+            }
+        })
+    }
+
+    GetUserFullName() {
+        if (this.state.loginState.loginType == 'guest') return "Guest User";
+        return this.state.loginState.name
     }
 
     render() {
@@ -60,15 +85,18 @@ export default class App extends Component {
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <React.Fragment>
                     <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
-                    <div className='google-login'>
-                    <GoogleLogin
-                        onSuccess={credentialResponse => {
-                            console.log(credentialResponse);
-                        }}
-                        onError={() => {
-                            console.log('Login Failed');
-                        }}
-                        /></div>
+                    <Stack spacing={2.5} className='login-stack'>
+                        <h2 style={{ marginInlineStart: '45px', color: 'black' }}>Logged in as {this.GetUserFullName()}</h2>
+                        <GoogleLogin
+                            onSuccess={credentialResponse => {
+                                this.onLoginSuccess(credentialResponse.credential)
+                                console.log(credentialResponse);
+                            }}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        />
+                    </Stack>
                 {contents}
                 </React.Fragment>
             </GoogleOAuthProvider>
