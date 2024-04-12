@@ -6,12 +6,12 @@ import VerticalTabs from './components/AppMainLayout/AppMainLayout.jsx';
 import SelectDatasetUI from './components/SelectDatasetUI/SelectDatasetUI.jsx';
 import SelectLocalDatasetLocationUI from './components/SelectLocalDatasetLocationUI/SelectLocalDatasetLocationUI.jsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { GoogleLogin } from '@react-oauth/google';
 import { GOOGLE_CLIENT_ID } from './constants.jsx';
 import Stack from '@mui/material/Stack';
 import { jwtDecode } from "jwt-decode";
 
 import './App.css'
+import LoginSection from './components/LoginSection/LoginSection.jsx';
 
 export default class App extends Component {
     static displayName = App.name;
@@ -41,7 +41,6 @@ export default class App extends Component {
 
     onLoginSuccess(credential) {
         const responsePayload = jwtDecode(credential);
-        console.log(responsePayload)
 
         this.setState({
             ...this.state,
@@ -50,6 +49,15 @@ export default class App extends Component {
                 credential: credential,
                 credentialPayload: responsePayload,
                 name: responsePayload.name
+            }
+        })
+    }
+
+    signOutLogin() {
+        this.setState({
+            ...this.state,
+            loginState: {
+                loginType: 'guest',
             }
         })
     }
@@ -85,18 +93,7 @@ export default class App extends Component {
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <React.Fragment>
                     <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
-                    <Stack spacing={2.5} className='login-stack'>
-                        <h2 style={{ marginInlineStart: '45px', color: 'black' }}>Logged in as {this.GetUserFullName()}</h2>
-                        <GoogleLogin
-                            onSuccess={credentialResponse => {
-                                this.onLoginSuccess(credentialResponse.credential)
-                                console.log(credentialResponse);
-                            }}
-                            onError={() => {
-                                console.log('Login Failed');
-                            }}
-                        />
-                    </Stack>
+                    <LoginSection appInst={this} />
                 {contents}
                 </React.Fragment>
             </GoogleOAuthProvider>
