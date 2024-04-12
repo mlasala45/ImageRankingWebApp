@@ -19,6 +19,10 @@ public class AppDatabaseContext : DbContext
 
     public AppDatabaseContext()
     {
+        if(!Database.CanConnect())
+        {
+            throw new Exception("Database Service not available.");
+        }
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)

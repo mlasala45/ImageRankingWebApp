@@ -10,16 +10,17 @@
     "preview": "vite preview",
     "predev": "node aspnetcore-https.js"
   },
-  "dependencies": {
-    "@emotion/react": "latest",
-    "@emotion/styled": "latest",
-    "@mui/icons-material": "latest",
-    "@mui/material": "latest",
-    "@mui/x-data-grid": "latest",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "vite-plugin-top-level-await": "^1.4.1"
-  },
+    "dependencies": {
+        "@emotion/react": "latest",
+        "@emotion/styled": "latest",
+        "@mui/icons-material": "latest",
+        "@mui/material": "latest",
+        "@mui/x-data-grid": "latest",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "vite-plugin-top-level-await": "^1.4.1",
+        "@react-oauth/google": "latest"
+    },
   "devDependencies": {
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",

@@ -5,6 +5,11 @@ import DatasetCreationUI from './components/DatasetCreationUI/DatasetCreationUI.
 import VerticalTabs from './components/AppMainLayout/AppMainLayout.jsx';
 import SelectDatasetUI from './components/SelectDatasetUI/SelectDatasetUI.jsx';
 import SelectLocalDatasetLocationUI from './components/SelectLocalDatasetLocationUI/SelectLocalDatasetLocationUI.jsx';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
+import { GOOGLE_CLIENT_ID } from './constants.jsx';
+
+import './App.css'
 
 export default class App extends Component {
     static displayName = App.name;
@@ -20,7 +25,6 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-        this.populateWeatherData();
     }
 
     registerBitmap(appInst, datasetKey, bitmap, bitmapKey) {
@@ -28,31 +32,6 @@ export default class App extends Component {
         if (!(datasetKey in allBitmaps)) allBitmaps[datasetKey] = {}
         allBitmaps[datasetKey][bitmapKey] = bitmap
         appInst.setState({ ...appInst.state })
-    }
-
-    static renderForecastsTable(forecasts) {
-        return (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Temp. (C)</th>
-                        <th>Temp. (F)</th>
-                        <th>Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {forecasts.map(forecast =>
-                        <tr key={forecast.date}>
-                            <td>{forecast.date}</td>
-                            <td>{forecast.temperatureC}</td>
-                            <td>{forecast.temperatureF}</td>
-                            <td>{forecast.summary}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        );
     }
 
     render() {
@@ -78,16 +57,21 @@ export default class App extends Component {
 
         console.log("Main App Render")
         return (
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <React.Fragment>
-                <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
+                    <h1 style={{ marginInlineStart: '45px' }}>Image Ranker</h1>
+                    <div className='google-login'>
+                    <GoogleLogin
+                        onSuccess={credentialResponse => {
+                            console.log(credentialResponse);
+                        }}
+                        onError={() => {
+                            console.log('Login Failed');
+                        }}
+                        /></div>
                 {contents}
-            </React.Fragment>
+                </React.Fragment>
+            </GoogleOAuthProvider>
         );
-    }
-
-    async populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        const data = await response.json();
-        this.setState({ forecasts: data, loading: false });
     }
 }
