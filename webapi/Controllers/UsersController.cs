@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
@@ -78,7 +80,7 @@ public class UsersController : ControllerBase
     {
         using (var context = new AppDatabaseContext())
         {
-            if(context.GuestUsers.Count((GuestUser a) => a.UID == guestId) > 0)
+            if (context.GuestUsers.Count((GuestUser a) => a.UID == guestId) > 0)
             {
                 HttpContext.Session.SetString("UserId", guestId);
                 HttpContext.Session.SetBool("IsUserGuest", true);
@@ -89,5 +91,69 @@ public class UsersController : ControllerBase
                 return new NotFoundResult();
             }
         }
+    }
+
+    private async Task<string> RequestGoogleAccessToken(string authCode)
+    {
+        string clientId = "XXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com";
+        string clientSecret = "XXXXXX-XXXXXXXXXX_XXXXXXX-X_XXXXXXX";
+        string redirectUri = "https://localhost:5173";
+
+        var parameters = new Dictionary<string, string>
+                {
+                    { "code", authCode },
+                    { "client_id", clientId },
+                    { "client_secret", clientSecret },
+                    { "redirect_uri", redirectUri },
+                    { "grant_type", "authorization_code" }
+                };
+
+        var content = new FormUrlEncodedContent(parameters);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://oauth2.googleapis.com/token")
+        {
+            Content = content
+        };
+        
+        using (var client = new HttpClient())
+        {
+            var response = await client.SendAsync(request);
+            var body = await response.Content.ReadAsStringAsync();
+            var jsonBody = JObject.Parse(body);
+            return jsonBody["access_token"].Value<string>();
+        }
+    }
+
+    private async Task<UserDetails> RequestGoogleUserDetails(string accessToken)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "https://www.googleapis.com/oauth2/v3/userinfo");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        using (var client = new HttpClient())
+        {
+            var response = await client.SendAsync(request);
+            var body = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<UserDetails>(body);
+        }
+    }
+
+    [HttpPost("ProcessGoogleClientAuthCode")]
+    public async Task<IActionResult> ProcessGoogleClientAuthCode([FromBody] RequestBody_ProcessGoogleClientAuthCode body)
+    {
+        var accessToken = await RequestGoogleAccessToken(body.Code);
+        var details = await RequestGoogleUserDetails(accessToken);
+        
+        return new OkResult();
+    }
+
+    public class RequestBody_ProcessGoogleClientAuthCode
+    {
+        public string Code { get; set; }
+    }
+
+    public class UserDetails
+    {
+        public string Sub { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
     }
 }
