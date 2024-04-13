@@ -39,21 +39,17 @@ export default class App extends Component {
         appInst.setState({ ...appInst.state })
     }
 
-    onLoginSuccess(credential) {
-        const responsePayload = jwtDecode(credential);
-
+    onLoginSuccess(userName) {
         this.setState({
             ...this.state,
             loginState: {
                 loginType: 'google',
-                credential: credential,
-                credentialPayload: responsePayload,
-                name: responsePayload.name
+                name: userName
             }
         })
     }
 
-    signOutLogin() {
+    onSignOut() {
         this.setState({
             ...this.state,
             loginState: {

@@ -13,7 +13,8 @@ public class GuestUser
 
     public int[] OwnedDatasets { get; set; }
 
-    public DateTime LastDateModified { get; set; }
+    public DateTime DateCreated { get; set; }
+    public DateTime DateLastSignedIn { get; set; }
 
     public GuestUser()
     {

@@ -11,7 +11,23 @@ public class PermanentUser
     [Key]
     public int UID { get; set; }
 
+    //User Details
+
     public string Name { get; set; }
+    public string Email { get; set; }
+
+    public string GoogleSubjectNumber { get; set; }
+
+    //Dates
 
     public DateTime DateCreated { get; set; }
+    public DateTime DateLastSignedIn { get; set; }
+
+    //User-Owned Data
+
+    public int[] OwnedDatasets { get; set; }
+
+    public PermanentUser() {
+        OwnedDatasets = new int[0];
+    }
 }

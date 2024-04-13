@@ -6,8 +6,15 @@ import Box from '@mui/material/Box';
 import { useGoogleLogin } from '@react-oauth/google';
 
 export default function LoginSection({ appInst }) {
-    function onClick_signOut() {
-        appInst.signOutLogin()
+    async function onClick_signOut() {
+        const response = await fetch("/backend/Users/SignOutPermanentUser")
+        if (response.ok) {
+            appInst.onSignOut()
+        }
+        else {
+            console.log("Server failed to process sign-out request")
+        }
+
         return false;
     }
 
@@ -27,7 +34,8 @@ export default function LoginSection({ appInst }) {
             },
             body: JSON.stringify(data)
         })
-        console.log(response)
+        const json = await response.json();
+        appInst.onLoginSuccess(json["userName"])
     }
 
     const login = useGoogleLogin({

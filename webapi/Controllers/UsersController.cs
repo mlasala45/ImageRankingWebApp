@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -47,7 +48,7 @@ public class UsersController : ControllerBase
         using (var context = new AppDatabaseContext())
         {
             GuestUser user = new();
-            user.LastDateModified = DateTime.UtcNow;
+            user.DateCreated = DateTime.UtcNow;
             int i = 0;
             int sentinel = 0;
             do
@@ -80,8 +81,16 @@ public class UsersController : ControllerBase
     {
         using (var context = new AppDatabaseContext())
         {
-            if (context.GuestUsers.Count((GuestUser a) => a.UID == guestId) > 0)
+            var t0 = DateTime.UtcNow;
+            var user = context.GuestUsers.FindPredicate(u => u.UID == guestId).FirstOrDefault();
+            var elapsed = (DateTime.UtcNow - t0).TotalMilliseconds;
+            Console.WriteLine($"ValidateGuestId db query took {elapsed}ms. guestId={guestId}");
+
+            if (user != null)
             {
+                user.DateLastSignedIn = DateTime.UtcNow;
+                context.SaveChanges();
+
                 HttpContext.Session.SetString("UserId", guestId);
                 HttpContext.Session.SetBool("IsUserGuest", true);
                 return new OkResult();
@@ -118,6 +127,7 @@ public class UsersController : ControllerBase
         using (var client = new HttpClient())
         {
             var response = await client.SendAsync(request);
+
             var body = await response.Content.ReadAsStringAsync();
             var jsonBody = JObject.Parse(body);
             return jsonBody["access_token"].Value<string>();
@@ -131,6 +141,7 @@ public class UsersController : ControllerBase
         using (var client = new HttpClient())
         {
             var response = await client.SendAsync(request);
+
             var body = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<UserDetails>(body);
         }
@@ -141,7 +152,50 @@ public class UsersController : ControllerBase
     {
         var accessToken = await RequestGoogleAccessToken(body.Code);
         var details = await RequestGoogleUserDetails(accessToken);
-        
+
+        using (var context = new AppDatabaseContext())
+        {
+            PermanentUser? user = context.PermanentUsers.FindPredicate(u => u.GoogleSubjectNumber == details.Sub).FirstOrDefault();
+
+            EntityEntry entry;
+            if (user == null)
+            {
+                user = new();
+                user.Name = details.Name;
+                user.Email = details.Email;
+                user.GoogleSubjectNumber = details.Sub;
+
+                user.DateCreated = DateTime.UtcNow;
+                user.DateLastSignedIn = user.DateCreated;
+
+                Console.WriteLine($"[{DateTime.UtcNow}] Creating new permanent user with email {user.Email}. Name={user.Name}");
+
+                entry = context.Entry(user);
+                context.PermanentUsers.Add(user);
+
+                context.SaveChanges();
+                DatabaseUtility.ForceWALCheckpoint(context);
+            }
+            else
+            {
+                Console.WriteLine($"[{DateTime.UtcNow}] Authenticated existing permanent user with email {user.Email}. Name={user.Name}");
+                entry = context.Entry(user);
+            }
+
+            HttpContext.Session.SetString("UserGuestId", HttpContext.Session.GetString("UserId"));
+            HttpContext.Session.SetString("UserId", entry.CurrentValues.GetValue<int>("UID").ToString());
+            HttpContext.Session.SetBool("IsUserGuest", false);
+
+            return new JsonResult(new { UserName = user.Name });
+        }
+    }
+
+    [HttpGet("SignOutPermanentUser")]
+    public IActionResult SignOutPermanentUser()
+    {
+        HttpContext.Session.SetString("UserId", HttpContext.Session.GetString("UserGuestId"));
+        HttpContext.Session.SetBool("IsUserGuest", true);
+
         return new OkResult();
     }
 

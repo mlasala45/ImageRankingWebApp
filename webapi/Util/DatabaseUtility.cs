@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 public static class DatabaseUtility
@@ -26,5 +27,21 @@ public static class DatabaseUtility
             command.CommandText = commandText;
             command.ExecuteNonQuery();
         }
+    }
+
+    public static IEnumerable<T> FindPredicate<T>(this DbSet<T> dbSet, Expression<Func<T, bool>> predicate) where T : class
+    {
+        var local = dbSet.Local.Where(predicate.Compile());
+        return local.Any()
+            ? local
+            : dbSet.Where(predicate).ToArray();
+    }
+
+    public static async Task<IEnumerable<T>> FindPredicateAsync<T>(this DbSet<T> dbSet, Expression<Func<T, bool>> predicate) where T : class
+    {
+        var local = dbSet.Local.Where(predicate.Compile());
+        return local.Any()
+            ? local
+            : await dbSet.Where(predicate).ToArrayAsync().ConfigureAwait(false);
     }
 }

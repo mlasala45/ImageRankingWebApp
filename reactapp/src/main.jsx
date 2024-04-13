@@ -9,7 +9,9 @@ console.log("Stored guestId: " + guestId)
 
 let needsNewId = true
 if (guestId != null) {
+    console.log("Waiting for response from ValidateGuestId")
     const response = await fetch(`/backend/Users/ValidateGuestId?guestId=${guestId}`)
+    console.log("Received response from ValidateGuestId")
     if (response.ok) {
         needsNewId = false
     }
