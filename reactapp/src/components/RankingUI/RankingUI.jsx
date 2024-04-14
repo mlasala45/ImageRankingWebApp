@@ -119,6 +119,16 @@ export default function RankingUI({ appInst }) {
         }
     }
 
+    function base64ToBlob(base64String) {
+        const byteCharacters = atob(base64String);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        return new Blob([byteArray]);
+    }
+
     const loadImageOptions = async () => {
         const leftCanvases = leftImgRef.current.getElementsByTagName('canvas')
         const rightCanvases = rightImgRef.current.getElementsByTagName('canvas')
@@ -132,11 +142,24 @@ export default function RankingUI({ appInst }) {
         if (choicesQueueLocal.length < 1) await requestNewChoice()
 
         const getBitmap = (key) => appInst.state.bitmaps[appInst.state.activeDatasetKey][key];
+        const drawChoice = async (choiceJson, i) => {
+            const hasBlobs = choiceJson.leftBlob != null;
+            let bitmapLeft = null;
+            let bitmapRight = null;
+            if (hasBlobs) {
+                bitmapLeft = await createImageBitmap(base64ToBlob(choiceJson.leftBlob))
+                bitmapRight = await createImageBitmap(base64ToBlob(choiceJson.rightBlob))
+            }
+            else {
+                bitmapLeft = getBitmap(choiceJson.left)
+                bitmapRight = getBitmap(choiceJson.right)
+            }
+            DrawBitmapToCanvasCentered(bitmapLeft, leftCanvases[i])
+            DrawBitmapToCanvasCentered(bitmapRight, rightCanvases[i])
+        }
         if (choices.current != null && choices.next != null) {
-            DrawBitmapToCanvasCentered(getBitmap(choices.current.left), leftCanvases[0])
-            DrawBitmapToCanvasCentered(getBitmap(choices.next.left), leftCanvases[1])
-            DrawBitmapToCanvasCentered(getBitmap(choices.current.right), rightCanvases[0])
-            DrawBitmapToCanvasCentered(getBitmap(choices.next.right), rightCanvases[1])
+            drawChoice(choices.current, 0)
+            drawChoice(choices.next, 1)
         }
     }
 

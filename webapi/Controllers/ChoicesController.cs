@@ -31,7 +31,7 @@ public class ChoicesController : ControllerBase
     }
 
     [HttpGet("GetNextChoice")]
-    public IActionResult GetNextChoice()
+    public ResponseBody_GetNextChoice GetNextChoice()
     {
         var dataset = GetDatasetLocal();
         var firstChoice = Random.Shared.Next(0, dataset.ImageNames.Length);
@@ -41,13 +41,36 @@ public class ChoicesController : ControllerBase
         var name = HttpContext.Connection.Id;
         //Console.WriteLine($"[{name}]: GetNextChoice ({firstChoice},{secondChoice})");
 
-        return new JsonResult(new
+        var ret = new ResponseBody_GetNextChoice();
+        ret.left = dataset.ImageNames[firstChoice];
+        ret.right = dataset.ImageNames[secondChoice];
+        ret.leftKey = firstChoice;
+        ret.rightKey = secondChoice;
+
+        if (dataset.AreImagesStoredInDatabase)
         {
-            left = dataset.ImageNames[firstChoice],
-            right = dataset.ImageNames[secondChoice],
-            leftKey = firstChoice,
-            rightKey = secondChoice
-        });
+            using (var context = new AppDatabaseContext())
+            {
+                var imageStore = context.OnlineDatasetImageStores.Find(dataset.UID);
+                var blobs = imageStore.Blobs;
+                ret.leftBlob = imageStore.Blobs[firstChoice];
+                ret.rightBlob = imageStore.Blobs[secondChoice];
+            }
+        }
+
+        return ret;
+    }
+
+    public class ResponseBody_GetNextChoice
+    {
+        public string left { get; set; }
+        public string right { get; set; }
+        public int leftKey { get; set; }
+        public int rightKey { get; set; }
+
+        public byte[] leftBlob { get; set; }
+        public byte[] rightBlob { get; set; }
+
     }
 
     [HttpPost("ReportChoice")]

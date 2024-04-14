@@ -42,7 +42,10 @@ const ImageListBody = (loadedBitmaps) => {
 }
 
 export default function DatasetCreationUI({ registerBitmap, appInst }) {
-    const [loadedBitmaps, setLoadedBitmaps] = useState([])
+    const [loadedData, setLoadedData] = useState({
+        bitmaps: [],
+        blobs: []
+    })
     const [tabValue, setTabValue] = useState("1");
 
     const handleChange = (event, newValue) => {
@@ -89,6 +92,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
 
         let count = 0;
         let loadedBitmapsLocal = []
+        let loadedBlobsLocal = []
         //For each file in the directory...
         for await (const [k, v] of dirHandle.entries()) {
             //Skip it if it's not an image
@@ -98,6 +102,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
 
             count++;
             const file = await v.getFile()
+            loadedBlobsLocal.push({ title: k, blob: file })
             let bitmap
             try {
                 //Attempt to load the file contents as a bitmap
@@ -114,7 +119,10 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
             loadedBitmapsLocal.push({ img: bitmap, title: k })
         }
 
-        setLoadedBitmaps(loadedBitmapsLocal) //Push the updated bitmap list to component state
+        setLoadedData({
+            bitmaps: loadedBitmapsLocal,
+            blobs: loadedBlobsLocal
+        }) //Push the updated bitmap list to component state
 
         //Update the element that reports the number of images loaded
         const label = document.getElementById('loadingReportLabel')
@@ -136,7 +144,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
     async function onClick_Next_LocalDataset() {
         //Create a list of all the image filenames from the component memory
         let data = []
-        for (const entry of loadedBitmaps) {
+        for (const entry of loadedData.bitmaps) {
             data.push(entry.title)
         }
         //Compose request body
@@ -165,9 +173,8 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
     async function onClick_Next_OnlineDataset() {
         const formData = new FormData()
         let i = 0;
-        for (const entry of loadedBitmaps) {
-            const blob = new Blob([entry.img]);
-            formData.append(`img${i++}`, blob, entry.title);
+        for (const entry of loadedData.blobs) {
+            formData.append(`img${i++}`, entry.blob, entry.title);
         }
         const name = document.getElementById("textfield-dataset-name").value
         formData.append("DatasetName", name)
@@ -204,7 +211,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
     }
 
     const BottomBar = () => {
-        if (loadedBitmaps.length > 0) {
+        if (loadedData.bitmaps.length > 0) {
             return (
                 <form onSubmit={handleSubmit} style={{ height: 50 }}>
                     <TextField id="textfield-dataset-name" label="Dataset Name" variant="outlined" required
@@ -255,7 +262,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
                         {/*<h4>Select Local Folder</h4>*/}
                         <Button variant="contained" sx={{ width: 156 }}
                             onClick={onClick_SelectFolder}>Select Folder</Button>
-                        {ImageListBody(loadedBitmaps)}
+                        {ImageListBody(loadedData.bitmaps)}
                     </Stack>
                     {BottomBar()}
                 </Box>
