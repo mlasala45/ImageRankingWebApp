@@ -10,6 +10,10 @@ import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
+import Tab from '@mui/material/Tab';
+import TabPanel from '@mui/lab/TabPanel';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
 import img_err from './img_err.png'
 import './DatasetCreationUI.css'
 import PropTypes from 'prop-types';
@@ -39,6 +43,27 @@ const ImageListBody = (loadedBitmaps) => {
 
 export default function DatasetCreationUI({ registerBitmap, appInst }) {
     const [loadedBitmaps, setLoadedBitmaps] = useState([])
+    const [tabValue, setTabValue] = useState("1");
+
+    const handleChange = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
+    function getDatabaseType() {
+        if (tabValue == 1) return "Local"
+        if (tabValue == 2) return "Online"
+        throw new Error("Invalid tab value for dataset type")
+    }
+
+    function a11yProps(index) {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+            sx: {
+                'backgroundColor': '#c1c1ca'
+            }
+        };
+    }
 
     const onLoad = () => {
         const imageList = document.getElementById('image-list')
@@ -97,7 +122,18 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
         label.style.visibility = 'visible'
     }
 
-    const onClick_Next = async () => {
+    async function onDatasetCreationSuccess(name, datasetKey) {
+        appInst.state.bitmaps[datasetKey] = appInst.state.bitmaps['new-dataset']
+        appInst.state.bitmaps['new-dataset'] = null
+        appInst.setState({
+            ...appInst.state,
+            mode: 'pairwiseChoices',
+            activeDatasetName: name,
+            activeDatasetKey: datasetKey
+        })
+    }
+
+    async function onClick_Next_LocalDataset() {
         //Create a list of all the image filenames from the component memory
         let data = []
         for (const entry of loadedBitmaps) {
@@ -109,7 +145,7 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
             ImageNames: data
         }
         //Post the new dataset's information to the backend
-        const response = await fetch("/backend/DatasetManagement/CreateDataset", {
+        const response = await fetch("/backend/DatasetManagement/CreateLocalDataset", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -122,22 +158,55 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
         //TODO: Display error on fail
         if (response.ok) {
             const json = await response.json()
-
-            appInst.state.bitmaps[json.datasetKey] = appInst.state.bitmaps['new-dataset']
-            appInst.state.bitmaps['new-dataset'] = null
-            appInst.setState({
-                ...appInst.state,
-                mode: 'pairwiseChoices',
-                activeDatasetName: data.Name,
-                activeDatasetKey: json.datasetKey
-            })
+            onDatasetCreationSuccess(name, json.datasetKey)
         }
+    }
+
+    async function onClick_Next_OnlineDataset() {
+        const formData = new FormData()
+        let i = 0;
+        for (const entry of loadedBitmaps) {
+            const blob = new Blob([entry.img]);
+            formData.append(`img${i++}`, blob, entry.title);
+        }
+        const name = document.getElementById("textfield-dataset-name").value
+        formData.append("DatasetName", name)
+
+        fetch('/backend/DatasetManagement/CreateOnlineDataset', {
+            method: 'POST',
+            body: formData
+        }).then(async response => {
+            if (response.ok) {
+                const json = await response.json()
+                onDatasetCreationSuccess(name, json.datasetKey)
+            } else {
+                console.error('Failed to upload dataset');
+            }
+        })
+    }
+
+    const onClick_Next = async () => {
+        switch (getDatabaseType()) {
+            case "Local":
+                console.log("Local Dataset")
+                onClick_Next_LocalDataset();
+                break;
+            case "Online":
+                console.log("Online Dataset")
+                onClick_Next_OnlineDataset();
+                break;
+        }
+    }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        onClick_Next();
     }
 
     const BottomBar = () => {
         if (loadedBitmaps.length > 0) {
             return (
-                <div style={{ height: 50 }}>
+                <form onSubmit={handleSubmit} style={{ height: 50 }}>
                     <TextField id="textfield-dataset-name" label="Dataset Name" variant="outlined" required
                     InputProps={{
                         sx: { bgcolor: 'white', width:'inherit' },
@@ -152,8 +221,8 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
                             flexDirection: 'row'
                         }} />
                     <Button variant="contained" sx={{ width: 100, float:'right', right:12 }}
-                        onClick={onClick_Next}>Next</Button>
-                </div>
+                        type="submit">Next</Button>
+                </form>
         )
         }
     }
@@ -174,6 +243,14 @@ export default function DatasetCreationUI({ registerBitmap, appInst }) {
                     height: 'fit-content',
                 }} >
                     <p id='loadingReportLabel' className='loadingReportLabel' >67 Images Loaded</p>
+                    <TabContext value={tabValue}>
+                    <TabList onChange={handleChange} variant="fullWidth">
+                        <Tab label="Local Dataset" value="1" {...a11yProps(0)} />
+                            <Tab label="Online Dataset" value="2" {...a11yProps(1)} />
+                    </TabList>
+                        <TabPanel value="1">The dataset will use images on your local computer.</TabPanel>
+                        <TabPanel value="2">The dataset will upload your images and store them on the remote server.</TabPanel>
+                    </TabContext>
                     <Stack className='stack' spacing={2}>
                         {/*<h4>Select Local Folder</h4>*/}
                         <Button variant="contained" sx={{ width: 156 }}

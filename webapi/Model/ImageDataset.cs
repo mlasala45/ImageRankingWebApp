@@ -15,6 +15,7 @@ public class ImageDataset
     public DateTime TimeCreated { get; set; }
     public string AuthorUID { get; set; }
     public bool IsAuthorGuest { get; set; }
+    public bool AreImagesStoredInDatabase { get; set; }
 
     public ImageDataset()
     {

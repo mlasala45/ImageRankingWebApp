@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace webapi.Migrations
 {
     [DbContext(typeof(AppDatabaseContext))]
-    [Migration("20240413131413_ExpandPermanentUserAndAddDateLastSignedIn")]
-    partial class ExpandPermanentUserAndAddDateLastSignedIn
+    [Migration("20240414184025_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,23 @@ namespace webapi.Migrations
                     b.HasKey("UID");
 
                     b.ToTable("Datasets");
+                });
+
+            modelBuilder.Entity("OnlineDatasetImageStore", b =>
+                {
+                    b.Property<int>("AssociatedDataset")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AssociatedDataset"));
+
+                    b.Property<byte[][]>("Blobs")
+                        .IsRequired()
+                        .HasColumnType("bytea[]");
+
+                    b.HasKey("AssociatedDataset");
+
+                    b.ToTable("OnlineDatasetImageStores");
                 });
 
             modelBuilder.Entity("RankingChoice", b =>
@@ -109,11 +126,8 @@ namespace webapi.Migrations
 
             modelBuilder.Entity("webapi.PermanentUser", b =>
                 {
-                    b.Property<int>("UID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UID"));
+                    b.Property<string>("UID")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp with time zone");

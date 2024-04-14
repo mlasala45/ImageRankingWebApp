@@ -11,6 +11,7 @@ public class AppDatabaseContext : DbContext
 
 
     public DbSet<ImageDataset> Datasets { get; set; }
+    public DbSet<OnlineDatasetImageStore> OnlineDatasetImageStores { get; set; }
     public DbSet<RankingChoice> RankingChoices { get; set; }
 
     const bool RUNNING_IN_CONTAINER = false;

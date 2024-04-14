@@ -20,7 +20,8 @@
         "react-dom": "^18.2.0",
         "vite-plugin-top-level-await": "^1.4.1",
         "@react-oauth/google": "latest",
-        "jwt-decode": "latest"
+        "jwt-decode": "latest",
+        "@mui/lab" : "latest"
     },
   "devDependencies": {
     "@types/react": "^18.2.43",

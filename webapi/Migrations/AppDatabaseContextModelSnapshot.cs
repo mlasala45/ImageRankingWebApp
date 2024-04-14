@@ -29,6 +29,9 @@ namespace webapi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UID"));
 
+                    b.Property<bool>("AreImagesStoredInDatabase")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("AuthorUID")
                         .IsRequired()
                         .HasColumnType("text");
@@ -50,6 +53,23 @@ namespace webapi.Migrations
                     b.HasKey("UID");
 
                     b.ToTable("Datasets");
+                });
+
+            modelBuilder.Entity("OnlineDatasetImageStore", b =>
+                {
+                    b.Property<int>("AssociatedDataset")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AssociatedDataset"));
+
+                    b.Property<byte[][]>("Blobs")
+                        .IsRequired()
+                        .HasColumnType("bytea[]");
+
+                    b.HasKey("AssociatedDataset");
+
+                    b.ToTable("OnlineDatasetImageStores");
                 });
 
             modelBuilder.Entity("RankingChoice", b =>
@@ -106,11 +126,8 @@ namespace webapi.Migrations
 
             modelBuilder.Entity("webapi.PermanentUser", b =>
                 {
-                    b.Property<int>("UID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UID"));
+                    b.Property<string>("UID")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp with time zone");

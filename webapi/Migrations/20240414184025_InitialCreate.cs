@@ -35,7 +35,8 @@ namespace webapi.Migrations
                 {
                     UID = table.Column<string>(type: "text", nullable: false),
                     OwnedDatasets = table.Column<int[]>(type: "integer[]", nullable: false),
-                    LastDateModified = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateLastSignedIn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -43,13 +44,29 @@ namespace webapi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OnlineDatasetImageStores",
+                columns: table => new
+                {
+                    AssociatedDataset = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Blobs = table.Column<byte[][]>(type: "bytea[]", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OnlineDatasetImageStores", x => x.AssociatedDataset);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PermanentUsers",
                 columns: table => new
                 {
-                    UID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UID = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    GoogleSubjectNumber = table.Column<string>(type: "text", nullable: false),
+                    OwnedDatasets = table.Column<int[]>(type: "integer[]", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DateLastSignedIn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -83,6 +100,9 @@ namespace webapi.Migrations
 
             migrationBuilder.DropTable(
                 name: "GuestUsers");
+
+            migrationBuilder.DropTable(
+                name: "OnlineDatasetImageStores");
 
             migrationBuilder.DropTable(
                 name: "PermanentUsers");

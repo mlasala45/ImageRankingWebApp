@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Primitives;
 using System.Data;
 using System.Numerics;
 using System.Xml.Linq;
@@ -18,7 +20,44 @@ public class DatasetManagementController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost("CreateDataset")]
+    private EntityEntry InitializeDataset(AppDatabaseContext dbContext, string datasetName, string[] imageNames, bool isLocal)
+    {
+        var dataset = new ImageDataset();
+        dataset.Name = datasetName;
+        dataset.ImageNames = imageNames;
+        dataset.TimeCreated = DateTime.UtcNow;
+        dataset.AuthorUID = HttpContext.Session.GetString("UserId")!;
+        dataset.IsAuthorGuest = HttpContext.Session.GetBool("IsUserGuest");
+        dataset.AreImagesStoredInDatabase = !isLocal;
+
+        var userStr = dataset.AuthorUID + (dataset.IsAuthorGuest ? " (Guest)" : "");
+        var typeStr = isLocal ? "local" : "online";
+        Console.WriteLine($"[{userStr}] Created a new {typeStr} dataset named '{dataset.Name}' with {dataset.ImageNames.Length} entries.");
+
+        var entry = dbContext.Entry(dataset);
+
+        dbContext.Datasets.Add(dataset);
+        dbContext.SaveChanges();
+
+        DatabaseUtility.ForceWALCheckpoint(dbContext);
+
+        var pk = entry.CurrentValues.GetValue<int>("UID");
+        HttpContext.Session.SetInt32("ActiveDataset", pk);
+
+        var userId = HttpContext.Session.GetString("UserId");
+        var userIsGuest = HttpContext.Session.GetBool("IsUserGuest");
+        UserCommon userData = userIsGuest ? dbContext.GuestUsers.Find(userId) : dbContext.PermanentUsers.Find(userId);
+        var list = new List<int>(userData.OwnedDatasets);
+        list.Add(pk);
+        userData.OwnedDatasets = list.ToArray();
+
+        dbContext.SaveChanges();
+        DatabaseUtility.ForceWALCheckpoint(dbContext);
+
+        return entry;
+    }
+
+    [HttpPost("CreateLocalDataset")]
     public IActionResult CreateDataset([FromBody] CreateDatasetRequest requestBody)
     {
         Console.WriteLine("Throwaway Debug message to prompt file change");
@@ -26,42 +65,59 @@ public class DatasetManagementController : ControllerBase
         //foreach (var line in body) str += "\n" + line;
         //Console.WriteLine(str);
 
-        if(requestBody.ImageNames.Length < 2)
+        if (requestBody.ImageNames.Length < 2)
         {
             return new BadRequestResult();
         }
 
-        var dataset = new ImageDataset();
-        dataset.Name = requestBody.Name;
-        dataset.ImageNames = requestBody.ImageNames;
-        dataset.TimeCreated = DateTime.UtcNow;
-        dataset.AuthorUID = HttpContext.Session.GetString("UserId")!;
-        dataset.IsAuthorGuest = HttpContext.Session.GetBool("IsUserGuest");
-
-        var userStr = dataset.AuthorUID + (dataset.IsAuthorGuest ? " (Guest)" : "");
-        Console.WriteLine($"[{userStr}] Created a new local dataset named '{dataset.Name}' with {dataset.ImageNames.Length} entries.");
-
-        using (var context = new AppDatabaseContext())
+        using (var dbContext = new AppDatabaseContext())
         {
-            var entry = context.Entry(dataset);
+            var datasetEntry = InitializeDataset(dbContext, requestBody.Name, requestBody.ImageNames, true);
 
-            context.Datasets.Add(dataset);
-            context.SaveChanges();
+            var pk = datasetEntry.CurrentValues.GetValue<int>("UID");
+            return new JsonResult(new { datasetKey = pk });
+        }
+    }
 
-            DatabaseUtility.ForceWALCheckpoint(context);
+    [HttpPost("CreateOnlineDataset")]
+    public IActionResult CreateOnlineDataset()
+    {
+        string datasetName;
+        {
+            StringValues sv;
+            Request.Form.TryGetValue("DatasetName", out sv);
+            datasetName = sv[0];
+        }
 
-            var pk = entry.CurrentValues.GetValue<int>("UID");
-            HttpContext.Session.SetInt32("ActiveDataset", pk);
+        var numImages = Request.Form.Files.Count;
+        OnlineDatasetImageStore imageStore = new();
+        imageStore.Blobs = new byte[numImages][];
 
-            var userData = context.GuestUsers.Find(HttpContext.Session.GetString("UserId"));
-            var list = new List<int>(userData.OwnedDatasets);
-            list.Add(pk);
-            userData.OwnedDatasets = list.ToArray();
+        int i = 0;
+        var imageNames = new string[numImages];
+        foreach (var formFile in Request.Form.Files)
+        {
+            imageNames[i] = formFile.FileName;
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                formFile.CopyTo(memoryStream);
+                imageStore.Blobs[i] = memoryStream.ToArray();
+            }
+            i++;
+        }
 
-            context.SaveChanges();
-            DatabaseUtility.ForceWALCheckpoint(context);
+        using (var dbContext = new AppDatabaseContext())
+        {
+            var datasetEntry = InitializeDataset(dbContext, datasetName, imageNames, false);
 
-            return new JsonResult(new { datasetKey=pk });
+            var pk = datasetEntry.CurrentValues.GetValue<int>("UID");
+
+            imageStore.AssociatedDataset = pk;
+            dbContext.OnlineDatasetImageStores.Add(imageStore);
+
+            dbContext.SaveChanges();
+
+            return new JsonResult(new { datasetKey = pk });
         }
     }
 
@@ -111,12 +167,12 @@ public class DatasetManagementController : ControllerBase
         var list = new List<DatasetsListResponseEntry>();
         using (var context = new AppDatabaseContext())
         {
-            if(Session.GetBool("IsUserGuest"))
+            if (Session.GetBool("IsUserGuest"))
             {
                 var userId = Session.GetString("UserId");
                 var userData = context.GuestUsers.Find(userId);
                 var ownedDatasets = context.Datasets.Where(e => userData.OwnedDatasets.Contains(e.UID)).ToList();
-                foreach(var dataset in ownedDatasets)
+                foreach (var dataset in ownedDatasets)
                 {
                     var responseEntry = new DatasetsListResponseEntry();
                     responseEntry.IsLocalToClient = true;
@@ -128,7 +184,7 @@ public class DatasetManagementController : ControllerBase
                 }
             }
         }
-        list.Sort((a,b) =>  a.Name.CompareTo(b.Name));
+        list.Sort((a, b) => a.Name.CompareTo(b.Name));
         return new JsonResult(list);
     }
 
@@ -146,5 +202,5 @@ public class DatasetManagementController : ControllerBase
         public int DatasetKey { get; set; }
         public int NumImages { get; set; }
         public bool IsLocalToClient { get; set; }
-}
+    }
 }

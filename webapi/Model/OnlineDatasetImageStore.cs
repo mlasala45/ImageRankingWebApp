@@ -4,12 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
-namespace webapi;
-
-public class GuestUser : UserCommon
+public class OnlineDatasetImageStore
 {
-    public GuestUser()
-    {
-        OwnedDatasets = new int[0];
-    }
+    [Key]
+    public int AssociatedDataset { get; set; }
+    public byte[][] Blobs { get; set; }
 }
