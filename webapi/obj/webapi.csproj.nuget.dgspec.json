@@ -63,6 +63,10 @@
               "target": "Package",
               "version": "[1.19.6, )"
             },
+            "Mime-Detective": {
+              "target": "Package",
+              "version": "[23.10.1, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"

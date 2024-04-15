@@ -12,6 +12,7 @@
           "Microsoft.EntityFrameworkCore.Relational": "8.0.4",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.4",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.19.6",
+          "Mime-Detective": "23.10.1",
           "Newtonsoft.Json": "13.0.3",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.2",
           "Swashbuckle.AspNetCore": "6.5.0"
@@ -389,6 +390,14 @@
         }
       },
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.19.6": {},
+      "Mime-Detective/23.10.1": {
+        "runtime": {
+          "lib/net6.0/MimeDetective.dll": {
+            "assemblyVersion": "23.10.1.0",
+            "fileVersion": "23.10.1.0"
+          }
+        }
+      },
       "Mono.TextTemplating/2.2.1": {
         "dependencies": {
           "System.CodeDom": "4.4.0"
@@ -759,6 +768,13 @@
       "sha512": "sha512-7GOQdMzQcH7o/bPFL/I2kQEgMnq2pYZ+exhGb9nNqs624K9w2jB2zieh4sOH9+a01i/G9iTWfeUI3IGMF7SKNg==",
       "path": "microsoft.visualstudio.azure.containers.tools.targets/1.19.6",
       "hashPath": "microsoft.visualstudio.azure.containers.tools.targets.1.19.6.nupkg.sha512"
+    },
+    "Mime-Detective/23.10.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-CQ+QjmBKMSppTX9P3eVfhRLRrOiM1HI3InaWqcQ7tHf3EE9OZZ1XeTd5gJhmjzQXyn/rMQUk6XKHvhp4XcW2Qw==",
+      "path": "mime-detective/23.10.1",
+      "hashPath": "mime-detective.23.10.1.nupkg.sha512"
     },
     "Mono.TextTemplating/2.2.1": {
       "type": "package",
