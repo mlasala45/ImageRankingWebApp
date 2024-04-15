@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Numerics;
 using System.Text;
@@ -25,6 +26,20 @@ public class DebugModeController : ControllerBase
             DatabaseUtility.ForceWALCheckpoint(context);
         }
         Environment.Exit(0);
+
+        return new OkResult();
+    }
+
+    [HttpPost("DropDatasetsAll")]
+    public IActionResult DropDatasetsAll()
+    {
+        using (var context = new AppDatabaseContext())
+        {
+            context.Datasets.ExecuteDelete();
+            context.OnlineDatasetImageStores.ExecuteDelete();
+            context.RankingChoices.ExecuteDelete();
+            context.SaveChanges();
+        }
 
         return new OkResult();
     }

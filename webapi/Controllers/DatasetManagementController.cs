@@ -175,7 +175,7 @@ public class DatasetManagementController : ControllerBase
                 foreach (var dataset in ownedDatasets)
                 {
                     var responseEntry = new DatasetsListResponseEntry();
-                    responseEntry.IsLocalToClient = true;
+                    responseEntry.IsLocalToClient = !dataset.AreImagesStoredInDatabase;
                     responseEntry.Name = dataset.Name;
                     responseEntry.NumImages = dataset.ImageNames.Length;
                     responseEntry.DatasetKey = dataset.UID;
