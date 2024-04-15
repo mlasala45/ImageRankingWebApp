@@ -23,6 +23,7 @@ export default class App extends Component {
             bitmaps: {},
             activeDatasetName: 'N/A',
             activeDatasetKey: null,
+            activeDatasetIsOnline: false,
             loginState: {
                 loginType: 'guest'
             }

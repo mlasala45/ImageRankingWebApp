@@ -50,7 +50,8 @@ export default function SelectDatasetUI({ appInst, onSelectNewDataset }) {
                     ...appInst.state,
                     mode: 'selectLocalDatasetLocation',
                     activeDatasetName: listData[i].name,
-                    activeDatasetKey: listData[i].datasetKey
+                    activeDatasetKey: listData[i].datasetKey,
+                    activeDatasetIsOnline: false
                 })
             }
             else {
@@ -60,7 +61,8 @@ export default function SelectDatasetUI({ appInst, onSelectNewDataset }) {
                     ...appInst.state,
                     mode: 'pairwiseChoices',
                     activeDatasetName: listData[i].name,
-                    activeDatasetKey: listData[i].datasetKey
+                    activeDatasetKey: listData[i].datasetKey,
+                    activeDatasetIsOnline: !listData[i].isLocalToClient
                 })
             }
         }

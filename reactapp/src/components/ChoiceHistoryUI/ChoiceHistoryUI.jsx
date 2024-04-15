@@ -21,8 +21,14 @@ import { GetBitmapFromActiveDataset } from '../../util/BitmapUtil';
 ]*/
 
 export default function ChoiceHistoryUI({ appInst }) {
-    const renderCell_img = function(params) {
-        const bitmap = GetBitmapFromActiveDataset(appInst, params.value);
+    const renderCell_img = function (params) {
+        let bitmap = null
+        if (appInst.state.activeDatasetIsOnline) {
+            bitmap = `backend/Images/GetImage?datasetKey=${appInst.state.activeDatasetKey}&imageKey=${params.value}`
+        }
+        else {
+            bitmap = GetBitmapFromActiveDataset(appInst, params.value);
+        }
         return (<BitmapCanvas bitmap={bitmap} name={params.value} width='100px' height='100px' />)
     }
 

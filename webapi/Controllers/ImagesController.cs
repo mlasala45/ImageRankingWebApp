@@ -31,7 +31,7 @@ public class ImagesController : ControllerBase
     {
         if(!DoesUserHaveAccessAuthority(datasetKey))
         {
-            return new ForbidResult();
+            return Forbid();
         }
         using (var context = new AppDatabaseContext())
         {
