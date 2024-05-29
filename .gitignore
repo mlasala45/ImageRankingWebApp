@@ -10,3 +10,5 @@ webapi/bin/
 .vs/ProjectEvaluation/imagerankingwebapp.metadata.v7.bin
 .vs/ProjectEvaluation/imagerankingwebapp.projects.v7.bin
 /.vs/ImageRankingWebApp/v17
+webapi/obj/Debug/net8.0/webapi.AssemblyInfo.cs
+webapi/obj/Debug/net8.0/webapi.AssemblyInfoInputs.cache
